@@ -1,0 +1,245 @@
+/* ONLY GENERAL CSS FOR HEADER AND FOOTER */
+
+/* --------- COMPONENT STYLES ----------*/
+#main-container {
+  position: relative;
+  height: 100%;
+  top: 7vw;
+  background-color: #f2f4f7;
+}
+
+#logo {
+  background-image: url(/Images/tempLogo.png);
+  width: 5vw;
+  height: 5vw;
+}
+.nav-items {
+  width: 3vw;
+  height: 3vw;
+}
+.nav-items:hover {
+  transform: scale(1.1);
+  filter: invert(30%) sepia(100%) saturate(500%) hue-rotate(200deg)
+    brightness(90%) contrast(110%);
+}
+.nav-before::before {
+  content: "";
+  position: absolute;
+  bottom: -0.5vw;
+  left: 1.5vw;
+  transform: translateX(-50%);
+  height: 0.4vw;
+  width: 0;
+  background-color: #1c3b54;
+  z-index: 10;
+  transition: width 0.2s ease-out;
+}
+.nav-before:hover::before {
+  width: 5vw;
+}
+#nav-ul > li {
+  position: relative;
+}
+
+.oldNav > ul {
+  display: flex;
+  gap: 4vw;
+}
+#searchBar {
+  height: 3.5vw;
+  width: 20vw;
+  border-radius: 1.5vw;
+  padding: 0 2vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2vw;
+  background-color: #f0f2f5;
+}
+#searchBar::placeholder {
+  color: rgb(192, 192, 192);
+  font-size: 1.2vw;
+}
+#logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2vw;
+}
+#nav-right-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5vw;
+}
+.nav-right {
+  width: 4vw;
+  height: 4vw;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.nav-right > img {
+  width: 50%;
+  height: 50%;
+}
+#account-container {
+  position: absolute;
+  right: 2vw;
+  top: 7vw;
+  width: 25vw;
+  border-radius: 0.3vw;
+  padding: 1vw;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.546);
+  background-color: white;
+}
+#profile-info {
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.546);
+  padding: 0.3vw;
+  border-radius: 0.3vw;
+}
+#profile-info-inner {
+  display: flex;
+  align-items: center;
+  gap: 1vw;
+  padding: 1vw;
+  border-radius: 0.3vw;
+  color: black;
+}
+#profile-info-inner h4,
+h6 {
+  color: black;
+}
+#profile-info-inner:hover {
+  background-color: #f2f4f7;
+}
+.hrLine {
+  width: 95%;
+  border: 1px solid #d0d3d7;
+  margin: 0.5vw auto;
+}
+#switchuser {
+  width: 1.3vw;
+  height: 1.3vw;
+  position: relative;
+}
+#switchuser-container {
+  gap: 1vw;
+  background-color: #e2e5e9;
+  padding: 0.3vw 0;
+  border-radius: 0.2vw;
+}
+#setting-container {
+  padding: 1.5vw 2vw;
+  flex-direction: column;
+  gap: 1vw;
+}
+#setting-container div {
+  display: flex;
+  align-items: center;
+  gap: 1vw;
+}
+#setting-container .icon-container {
+  width: 2.5vw;
+  height: 2.5vw;
+  border-radius: 50%;
+  background-color: #e2e5e9;
+  border: 0.5vw solid #e2e5e9;
+}
+#icon-1 {
+  background-image: url(/Images/setting-icon.svg);
+}
+#icon-2 {
+  background-image: url(/Images/help-icon.svg);
+}
+#icon-3 {
+  background-image: url(/Images/display-icon.svg);
+}
+#icon-4 {
+  background-image: url(/Images/feedback-icon.svg);
+}
+#icon-5 {
+  background-image: url(/Images/logout-icon.svg);
+}
+#Notification {
+  background-image: url(/Images/nav-right-notification.svg);
+  background-size: 50%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+#Notification h3,
+button {
+  color: black;
+}
+#Messenger {
+  background-image: url(/Images/nav-right-messenger.svg);
+  background-size: 50%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+#Messenger h3 {
+  color: black;
+}
+#chat-filter-buttons {
+  display: flex;
+  gap: 1vw;
+  padding: 2vw;
+}
+#chat-filter-buttons button {
+  padding: 0.5vw 1vw;
+  border: none;
+  background-color: white;
+  border-radius: 2vw;
+}
+#notification-container {
+  position: absolute;
+  right: 2vw;
+  top: 7vw;
+  width: 25vw;
+  border-radius: 0.3vw;
+  padding: 1.5vw;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.546);
+  background-color: white;
+}
+#messenger-container {
+  position: absolute;
+  right: 2vw;
+  top: 7vw;
+  width: 25vw;
+  border-radius: 0.3vw;
+  padding: 1.5vw;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.546);
+  background-color: white;
+}
+#notification-container #not-button-container button {
+  height: 3vw;
+  width: 5vw;
+  border-radius: 1vw;
+  background-color: white;
+  border: none;
+  cursor: pointer;
+}
+#notification-container #not-button-container button:hover {
+  background-color: #f2f4f7;
+}
+.not-image-container {
+  width: 3vw;
+  height: 3vw;
+  border-radius: 50%;
+  background-color: #e2e5e9;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+.not-container {
+  gap: 1vw;
+  margin: 1vw 0;
+}
+#Menu {
+  background-image: url(/Images/nav-right-menu.svg);
+  background-size: 50%;
+  background-repeat: no-repeat;
+  background-position: center;
+}

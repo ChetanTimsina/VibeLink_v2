@@ -1,0 +1,204 @@
+#main-image-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vw;
+  border: 2px solid red;
+  position: relative;
+  background-color: gray;
+}
+#main-image {
+  width: 38vw;
+  height: 38vw;
+  border-radius: 50%;
+  border: 2px solid rgb(255, 255, 255);
+  box-shadow: 0 0 100px white;
+  overflow: hidden;
+  display: flex;
+  place-content: center;
+  place-items: center;
+  position: relative;
+}
+#main-image::before {
+  content: "";
+  position: absolute;
+  width: 38vw;
+  background-image: linear-gradient(
+    180deg,
+    rgb(0, 183, 255),
+    rgb(255, 48, 255),
+    red,
+    yellow,
+    green
+  );
+  height: 130%;
+  animation: rotBGimg 3s linear infinite;
+  transition: all 0.2s linear;
+}
+
+@keyframes rotBGimg {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+#main-image::after {
+  content: "";
+  position: absolute;
+  background: rgb(0, 0, 0);
+  inset: 5px;
+  border-radius: 50%;
+  background-image: url(/Images/marketImages/Coat.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+#main-left {
+  position: absolute;
+  color: white;
+  width: 25%;
+  left: 2vw;
+}
+#main-left h1 {
+  color: black;
+  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+  font-size: 4vw;
+}
+#main-left h3 {
+  color: black;
+  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+}
+#main-left h4 {
+  font-family: Big Shoulders Stencil;
+  letter-spacing: 0.05vw;
+}
+#main-right {
+  width: 25%;
+  position: absolute;
+  right: 2vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#rating-graph {
+  background-image: url(/Images/marketImages/piechart2.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 15vw;
+  height: 15vw;
+  border-radius: 0.2vw;
+}
+#rating-container {
+  border: 1px solid black;
+  padding: 1vw;
+  width: 23vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+#main-right h1 {
+  color: black;
+  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+  font-size: 3vw;
+}
+#main-contact {
+  display: flex;
+  gap: 1vw;
+  padding: 1vw;
+  border: 2px solid black;
+  border-radius: 0.2vw;
+}
+#Contact-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1vw;
+  border: 1px solid black;
+  width: 23vw;
+  margin-top: 3vw;
+}
+#main-right h3 {
+  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+  margin-top: 1vw;
+  font-size: 3vw;
+}
+#product-display {
+  width: 100%;
+  height: 160vw;
+  margin: 4vw auto;
+  gap: 3vw;
+  padding-left: 2vw;
+}
+.card2 {
+  width: 190px;
+  background: #b8f9d3;
+  border: 3px solid black;
+  box-shadow: 0 0 5px black;
+  padding: 0.4em;
+  border-radius: 6px;
+}
+
+.card-image img {
+  width: 100%;
+  height: 10vw;
+  border-radius: 6px 6px 0 0;
+  border: 3px solid black;
+}
+
+.card-image:hover {
+  transform: scale(0.98);
+}
+
+.category {
+  text-transform: uppercase;
+  font-size: 0.7em;
+  font-weight: 600;
+  color: rgb(63, 121, 230);
+  padding: 10px 7px 0;
+}
+
+.category:hover {
+  cursor: pointer;
+}
+
+.heading {
+  font-weight: 600;
+  color: rgb(88, 87, 87);
+  padding: 7px;
+}
+
+.heading:hover {
+  cursor: pointer;
+}
+
+.author {
+  color: gray;
+  font-weight: 400;
+  font-size: 11px;
+  padding-top: 20px;
+}
+
+.name {
+  font-weight: 600;
+}
+
+.name:hover {
+  cursor: pointer;
+}
+#product-display > div {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  gap: 4vw;
+}
+#product-display li {
+  list-style: circle;
+  font-size: 3vw;
+  margin: 1vw 0;
+}

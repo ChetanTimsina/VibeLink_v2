@@ -1,0 +1,35 @@
+import { PrismaClient } from "@prisma/client"; // straight import
+const prisma = new PrismaClient(); // create instance bro
+
+export async function POST(request) {
+  try {
+    const body = await request.json();
+    const { username, email, password } = body;
+
+    // Find the user
+    const user = await prisma.vibeUserTable.findFirst({
+      where: {
+        username,
+        email,
+        password, // 😶‍🌫️ reminder: you should hash passwords later bro fr
+      },
+    });
+
+    if (!user) {
+      // User not found = wrong creds
+      return new Response(JSON.stringify({ error: "Invalid credentials 🚨" }), {
+        status: 401,
+      });
+    }
+
+    // User found = success!
+    return new Response(JSON.stringify({ message: "Login successful 🚀" }), {
+      status: 200,
+    });
+  } catch (error) {
+    console.error("Login failed 🧨:", error);
+    return new Response("Internal Server Error", { status: 500 });
+  } finally {
+    await prisma.$disconnect(); // always clean up bro
+  }
+}

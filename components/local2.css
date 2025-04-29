@@ -1,0 +1,250 @@
+#logo2 {
+  width: 5vw;
+  height: 5vw;
+}
+#logo-container2 {
+  display: flex;
+  align-items: center;
+  padding: 0vw;
+}
+a {
+  text-decoration: none;
+}
+.search {
+  height: 4.3vw;
+  width: 4.3vw;
+  background-color: #f0f5ff;
+}
+#search-form {
+  display: flex;
+}
+#search-form input {
+  width: 20vw;
+  padding: 2vw;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.7);
+}
+#search-form button {
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.7);
+}
+.nav_ul {
+  display: flex;
+  gap: 0.5vw;
+}
+.nav_ul > li {
+  padding: 1vw;
+  border: 2px solid white;
+  border-radius: 0.3vw;
+  box-shadow: inset 0 0 10px white;
+  height: 4vw;
+  margin-top: 1vw;
+}
+.nav_ul > li:hover {
+  border: 2px solid white;
+  box-shadow: 0 0 10px white;
+}
+#Login {
+  width: 7vw;
+  height: 4vw;
+  display: flex;
+  gap: 0.5vw;
+  justify-content: center;
+  align-items: center;
+  padding-right: 0.2vw;
+}
+#Login img {
+  transition: all 0.5s ease 0s;
+}
+#Login:hover img {
+  transform: rotate(90deg);
+}
+/* -----------------------------copied */
+.btn-container {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+  padding: 0.6vw;
+  border: 2px solid white;
+  border-radius: 0.3vw;
+  box-shadow: inset 0 0 10px white;
+  width: 16vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.2vw;
+}
+
+.btn-container i {
+  display: inline-block;
+  position: relative;
+  top: -9px;
+}
+
+label {
+  font-size: 13px;
+  color: #424242;
+  font-weight: 500;
+}
+
+.btn-color-mode-switch {
+  display: inline-block;
+  margin: 0px;
+  position: relative;
+}
+
+.btn-color-mode-switch > label.btn-color-mode-switch-inner {
+  margin: 0px;
+  width: 130px;
+  height: 30px;
+  background: #e0e0e0;
+  border-radius: 26px;
+  overflow: hidden;
+  position: relative;
+  transition: all 0.3s ease;
+  box-shadow: 0px 0px 8px 0px rgba(17, 17, 17, 0.34) inset;
+  display: block;
+}
+
+.btn-color-mode-switch > label.btn-color-mode-switch-inner:before {
+  content: attr(data-on);
+  position: absolute;
+  font-size: 12px;
+  font-weight: 500;
+  top: 7px;
+  right: 20px;
+}
+
+.btn-color-mode-switch > label.btn-color-mode-switch-inner:after {
+  content: attr(data-off);
+  width: 70px;
+  height: 16px;
+  background: #fff;
+  border-radius: 26px;
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  text-align: center;
+  transition: all 0.3s ease;
+  box-shadow: 0px 0px 6px -2px #111;
+  padding: 5px 0px;
+}
+
+.btn-color-mode-switch > .alert {
+  display: none;
+  background: #ff9800;
+  border: none;
+  color: #fff;
+}
+
+.btn-color-mode-switch input[type="checkbox"] {
+  cursor: pointer;
+  width: 50px;
+  height: 25px;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  z-index: 1;
+  margin: 0px;
+}
+
+.btn-color-mode-switch
+  input[type="checkbox"]:checked
+  + label.btn-color-mode-switch-inner {
+  background: #151515;
+  color: #fff;
+}
+
+.btn-color-mode-switch
+  input[type="checkbox"]:checked
+  + label.btn-color-mode-switch-inner:after {
+  content: attr(data-on);
+  left: 68px;
+  background: #3c3c3c;
+}
+
+.btn-color-mode-switch
+  input[type="checkbox"]:checked
+  + label.btn-color-mode-switch-inner:before {
+  content: attr(data-off);
+  right: auto;
+  left: 20px;
+}
+
+.btn-color-mode-switch input[type="checkbox"]:checked ~ .alert {
+  display: block;
+}
+
+.nav-dropdown {
+  width: 30vw;
+  height: 30vw;
+  padding: 1.8vw;
+  position: absolute;
+  top: 7vw;
+  left: 47vw;
+  display: flex;
+  gap: 3vw;
+  background-color: white;
+  border: 2px solid black;
+  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.2);
+}
+#nav-image {
+  width: 10vw;
+  height: 14vw;
+}
+.nav-image-container {
+  background-color: #e0e0e0;
+  padding: 2vw;
+  width: 14vw;
+  box-shadow: inset 0 0 10px black;
+}
+.nav-dropdown h6 {
+  font-size: 1.1rem;
+  line-height: 1.2rem;
+  border-bottom: 1px solid black;
+  text-align: center;
+  padding-bottom: 0.5vw;
+}
+.nav-dropdown ul {
+  margin-bottom: 1.3vw;
+  line-height: 1.2rem;
+  text-align: center;
+  color: rgb(112, 112, 112);
+}
+.Category-drop,
+.Products-drop,
+.Carts-drop {
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease, visibility 0.3s;
+  pointer-events: none;
+}
+#Categories:hover nav {
+  z-index: 2;
+}
+
+#Categories:hover .Category-drop {
+  z-index: 5;
+  opacity: 1;
+  pointer-events: auto;
+}
+#Products:hover .Products-drop {
+  z-index: 5;
+  opacity: 1;
+  pointer-events: auto;
+}
+#Carts:hover .Carts-drop {
+  z-index: 5;
+  opacity: 1;
+  pointer-events: auto;
+}
+.newNav {
+  display: flex;
+  gap: 1vw;
+  align-items: center;
+  height: 7vw;
+  position: relative;
+  top: 7vw;
+  width: 99vw;
+  z-index: 5;
+  border: 1px solid black;
+  background-color: #b8f9d3;
+}
