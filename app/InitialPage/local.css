@@ -87,3 +87,34 @@
   padding: 1vw;
   border-radius: 0.4vw;
 }
+.forgot-password-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.forgot-password-form > h4 {
+  margin: 1vw 0;
+}
+.forgot-password-form > div > button {
+  width: 50%;
+  height: 3.5vw;
+  border-radius: 0.4vw;
+  color: white;
+  background-color: #42b72a;
+  cursor: pointer;
+  font-size: large;
+  font-weight: bolder;
+}
+.forgot-password-form > div > a {
+  width: 50%;
+  text-align: center;
+  background-color: gray;
+  padding: 0.9vw;
+  margin-left: 1vw;
+  font-size: large;
+  font-weight: bolder;
+  color: white;
+  border-radius: 0.4vw;
+  text-decoration: none;
+  cursor: pointer;
+}

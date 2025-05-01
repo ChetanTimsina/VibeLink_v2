@@ -86,7 +86,10 @@ const InitialPage = () => {
           />
 
           <h4>
-            <a href="#" style={{ textDecoration: "none" }}>
+            <a
+              href="/InitialPage/forgotPassword"
+              style={{ textDecoration: "none" }}
+            >
               Forgotten password?
             </a>
           </h4>
