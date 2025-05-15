@@ -22,9 +22,11 @@ export async function POST(request) {
       });
     }
 
-    // User found = success!
-    return new Response(JSON.stringify({ message: "Login successful 🚀" }), {
+    return new Response(JSON.stringify(user), {
       status: 200,
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
   } catch (error) {
     console.error("Login failed 🧨:", error);

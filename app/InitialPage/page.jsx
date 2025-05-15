@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 import "./local.css";
 
 const InitialPage = () => {
@@ -21,12 +22,20 @@ const InitialPage = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, password }), // 🛑 no email sent bro
+        body: JSON.stringify({ username, password }),
       });
 
       if (res.status === 200) {
-        console.log("Login success!");
-        router.push("/"); // 🚀 move to homepage
+        const user = await res.json();
+        // localStorage.setItem("vibeUser", JSON.stringify(user));
+        Cookies.set("vibeUser", user.id, {
+          expires: 365 * 100,
+          path: "/",
+        });
+        Cookies.set("isLoggedIn", "true", { expires: 1 / 24 });
+        // const userfromlocal = JSON.parse(localStorage.getItem("vibeUser"));
+        // console.log(userfromlocal?.username);
+        router.push("/");
       } else {
         const data = await res.json();
         alert(data.error || "Login failed ❌");
@@ -39,8 +48,20 @@ const InitialPage = () => {
     }
   }
 
+  useEffect(() => {
+    const AddButton = document.getElementById("user-0");
+    const form = document.querySelector(".LoginForm");
+    const cross = document.getElementById("cross");
+    AddButton.addEventListener("click", () => {
+      form.style.display = "block";
+    });
+    cross.addEventListener("click", () => {
+      form.style.display = "none";
+    });
+  });
+
   return (
-    <div id="main-container">
+    <div id="main-container" style={{ height: "100vh" }}>
       <section>
         <h1 style={{ color: "#0866ff" }}>VibeLink</h1>
         <h1 style={{ fontWeight: "500" }}>Recent Logins</h1>
@@ -54,12 +75,67 @@ const InitialPage = () => {
             <h3>User Name</h3>
           </section>
 
-          <section className="user-0">
+          <section id="user-0">
             <div className="AdduserImage">
               <img src="/Images/nav-right-profileAdd.svg" alt="add user" />
             </div>
-            <h3 style={{ color: "#1976f2" }}>Add Account</h3>
+            <h3 id="addAccountButton" style={{ color: "#1976f2" }}>
+              Add Account
+            </h3>
           </section>
+          <div id="right-section">
+            <form
+              onSubmit={handleSubmit}
+              className="LoginForm"
+              style={{
+                display: "none",
+                position: "absolute",
+                top: "2vw",
+                left: "auto",
+              }}
+            >
+              <section
+                style={{
+                  padding: "1vw",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <h1 style={{ fontSize: "1.7vw", fontWeight: "light" }}>
+                  Log in to VibeLink
+                </h1>
+                <div id="cross"></div>
+              </section>
+              <input
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <input
+                type="submit"
+                value={loading ? "Adding" : "Add Account"}
+                disabled={loading}
+              />
+              <h4>
+                <a
+                  href="/InitialPage/forgotPassword"
+                  style={{ textDecoration: "none" }}
+                >
+                  Forgotten password?
+                </a>
+              </h4>
+            </form>
+          </div>
         </section>
       </section>
 

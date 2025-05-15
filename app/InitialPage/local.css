@@ -118,3 +118,14 @@
   text-decoration: none;
   cursor: pointer;
 }
+#cross {
+  background-image: url(/Images/wrong.svg);
+  width: 2vw;
+  height: 2vw;
+  background-size: 60%;
+  background-repeat: no-repeat;
+  background-position: center;
+  border-radius: 50%;
+  border: 1px solid black;
+  background-color: #ebedf0;
+}

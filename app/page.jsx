@@ -1,45 +1,159 @@
 "use client";
 import "@/app/globals.css";
 import "./local.css";
+import "./localsecond.css";
 import Link from "next/link";
-import { useEffect } from "react";
+import Cookies from "js-cookie";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const [friends, setFriends] = useState([]);
+  const [text, setText] = useState("");
+  const [image, setImage] = useState(null);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImage(URL.createObjectURL(file));
+    }
+  };
+
+  const removeImage = () => {
+    setImage(null);
+    document.getElementById("fileInput").value = ""; // reset file input manually
+  };
+  const handlePost = async (e) => {
+    e.preventDefault();
+
+    // 1. Get user from localStorage
+    // const user = JSON.parse(localStorage.getItem("vibeUser"));
+    const user = Cookies.get("vibeUser");
+
+    // 2. Validate form
+    // if (!text || !image) {
+    //   alert("Text and image are required");
+    //   return;
+    // }
+
+    // console.log(text);
+    // console.log(image);
+    try {
+      // 3. Prepare form data
+      const formData = new FormData();
+      formData.append("postTitle", text);
+      formData.append("image", image);
+      formData.append("authorId", user);
+
+      // 4. Send to API
+      const res = await fetch("/api/uploadPost", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (res.ok) {
+        console.log("Post uploaded successfully");
+        setText("");
+        setImage(null);
+      } else {
+        console.error("Failed to upload post");
+      }
+    } catch (err) {
+      console.error("Error uploading post:", err);
+    }
+  };
+
+  const router = useRouter();
+
   useEffect(() => {
+    // Check if the user is logged in by reading the cookie
+    const isLoggedIn = Cookies.get("isLoggedIn");
+
+    if (!isLoggedIn) {
+      // Redirect to InitialPage (login page) if not logged in
+      router.push("/InitialPage");
+    }
+  }, [router]);
+
+  useEffect(() => {
+    const fetchFriends = async () => {
+      const user = Cookies.get("vibeUser"); // Get userId from cookie
+
+      if (!user) {
+        console.error("No user found in cookies");
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/getFriends", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId: user }),
+        });
+
+        if (!res.ok) throw new Error("Failed to fetch friends");
+
+        const data = await res.json();
+        setFriends(data);
+      } catch (err) {
+        console.error("Error fetching friends:", err);
+      }
+    };
+
+    fetchFriends();
+  }, []);
+  useEffect(() => {
+    if (friends.length === 0) return;
     const contact_containers = document.querySelectorAll(".contact-container");
     const friend_template = document.querySelector(".friend-template");
 
     let randomSeed = 1;
 
-    const friends = [
-      "BIJAY CHETTRI",
-      "CHETAN TIMSINA",
-      "CHIMI GYELTSHEN",
-      "CHONEY RANGDEL",
-      "DAMBER KHATIWARA",
-      "DORJI GYELTSHEN",
-      "GYELTSHEN LEPCHA",
-      "JIGME TSHERAB DAMCHOE",
-      "JIGME TSHEWANG YOEZER",
-      "KARMA SONAM",
-      "KARMA WANGCHUK TITUNG",
-      "KELZANG PENJOR",
-      "KEZANG TSHOMO",
-      "KINLEY PHUNTSHO",
-    ];
+    // const friends = [
+    //   "BIJAY CHETTRI",
+    //   "CHETAN TIMSINA",
+    //   "CHIMI GYELTSHEN",
+    //   "CHONEY RANGDEL",
+    //   "DAMBER KHATIWARA",
+    //   "DORJI GYELTSHEN",
+    //   "GYELTSHEN LEPCHA",
+    //   "JIGME TSHERAB DAMCHOE",
+    //   "JIGME TSHEWANG YOEZER",
+    //   "KARMA SONAM",
+    //   "KARMA WANGCHUK TITUNG",
+    //   "KELZANG PENJOR",
+    //   "KEZANG TSHOMO",
+    //   "KINLEY PHUNTSHO",
+    // ];
 
-    for (let i = 0; i < 14; i++) {
+    // for (let i = 0; i < 14; i++) {
+    //   contact_containers.forEach((contact_container) => {
+    //     const friendClone = friend_template.cloneNode(true);
+    //     friendClone.style.display = "flex";
+    //     friendClone.querySelector(".contact-name").textContent = friends[i];
+    //     friendClone.querySelector(
+    //       ".box-right-icon"
+    //     ).style.backgroundImage = `url("https://i.pravatar.cc/100?u=${randomSeed}")`;
+    //     randomSeed++;
+    //     contact_container.appendChild(friendClone);
+    //   });
+    // }
+
+    friends.forEach((friend) => {
       contact_containers.forEach((contact_container) => {
         const friendClone = friend_template.cloneNode(true);
         friendClone.style.display = "flex";
-        friendClone.querySelector(".contact-name").textContent = friends[i];
+        friendClone.querySelector(".contact-name").textContent =
+          friend.username;
         friendClone.querySelector(
           ".box-right-icon"
-        ).style.backgroundImage = `url("https://i.pravatar.cc/100?u=${randomSeed}")`;
+        ).style.backgroundImage = `url("https://i.pravatar.cc/100?u=${randomSeed}")`; // PUT FRIENDS LOGO HERE
         randomSeed++;
         contact_container.appendChild(friendClone);
       });
-    }
+    });
     randomSeed = new Date().getTime();
     for (let i = 1; i <= 15; i++) {
       const element = document.querySelector(`.right-icon-${i}`);
@@ -55,52 +169,77 @@ export default function Home() {
         element.style.backgroundImage = `url("https://picsum.photos/360/640?random=${randomSeed}")`;
       }
     }
-    const postTemplate = document.querySelector(".post-container");
-    const postContainer = document.querySelector("#post-container-area");
 
-    const mockUserData = Array.from({ length: 10 }, (_, i) => ({
-      name: { first: `User${i + 1}`, last: `Test${i + 1}` },
-      picture: `https://i.pravatar.cc/100?u=${i + 1}`,
-    }));
-
-    async function createPosts() {
-      const postDataPromises = Array.from({ length: 10 }, async (_, i) => {
-        const postClone = postTemplate.cloneNode(true);
-        postClone.style.display = "block";
-        const randomSeed = Math.floor(Math.random() * 100000);
-
-        // Set post image immediately
-        const postImage = postClone.querySelector(".post-image");
-        if (postImage) {
-          postImage.style.backgroundImage = `url("https://picsum.photos/700/600?random=${randomSeed}")`;
-        }
-
-        // Use mock data instead of fetching
-        const person = mockUserData[i];
-
-        const postName = postClone.querySelector(".post-name");
-        const postIcon = postClone.querySelector("#post-icon");
-
-        if (postName)
-          postName.innerHTML = `${person.name.first} ${person.name.last}`;
-        if (postIcon)
-          postIcon.style.backgroundImage = `url("${person.picture}")`;
-
-        postContainer.appendChild(postClone);
-      });
-
-      // Wait for all promises to resolve before continuing
-      await Promise.all(postDataPromises);
-    }
-
-    createPosts();
     // for (let i = 1; i <= 3; i++) {
     //   const element = document.querySelector(`.react-${i}`);
     //   if (element) {
     //     element.style.backgroundImage = `url("reaction/react-${i}.jpg")`;
     //   }
     // }
+  }, [friends]);
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const res = await fetch("/api/getimage"); // API you just made
+        if (!res.ok) throw new Error("Failed to fetch images");
+
+        const data = await res.json();
+        setPosts(data);
+      } catch (err) {
+        console.error("Image fetch error 💥:", err);
+      }
+    };
+
+    fetchImages();
   }, []);
+
+  const postTemplate = document.querySelector(".post-container");
+  const postContainer = document.querySelector("#post-container-area");
+  async function createPosts() {
+    console.log("Posts data:", posts);
+
+    const postDataPromises = posts.map(async (post) => {
+      const postClone = postTemplate.cloneNode(true);
+      postClone.style.display = "block";
+
+      // 🖼️ Set post image (base64 from DB)
+      const postImage = postClone.querySelector(".post-image");
+      if (postImage) {
+        if (post.postImage) {
+          postImage.style.backgroundImage = `url("data:image/png;base64,${post.postImage}")`;
+        } else {
+          postImage.style.backgroundImage = `url("https://via.placeholder.com/700x600?text=No+Image")`;
+        }
+      }
+
+      // 📝 Set post title
+      const postTitle = postClone.querySelector(".post-title");
+      if (postTitle) {
+        postTitle.textContent = post.postTitle || "Untitled Post";
+      }
+
+      // 🧾 Set post description
+      const postDescription = postClone.querySelector(".post-description");
+      if (postDescription) {
+        postDescription.textContent =
+          post.postDescription || "No description available.";
+      }
+
+      // 🆔 Set post ID (optional display or data attribute)
+      postClone.setAttribute("data-post-id", post.postid);
+
+      postContainer.appendChild(postClone);
+    });
+
+    await Promise.all(postDataPromises);
+  }
+
+  createPosts();
+  console.log("afdshg");
+  console.log(posts);
+
   return (
     <main id="main-container">
       <div className="container">
@@ -220,13 +359,154 @@ export default function Home() {
                 />
                 <h6>Live Video</h6>
               </button>
-              <button>
+              <button
+                onClick={() => {
+                  document.querySelector(
+                    ".super-main-post-container"
+                  ).style.display = "block";
+                }}
+                style={{ cursor: "pointer" }}
+              >
                 <img
                   src="https://static.xx.fbcdn.net/rsrc.php/v4/y7/r/Ivw7nhRtXyo.png"
                   alt=""
                 />
                 <h6>Photo/video</h6>
               </button>
+              <div className="super-main-post-container">
+                <section className="main-post-container">
+                  <div className="createPostContainer">
+                    <h2>Create Post</h2>
+                    <div
+                      className="wrong-icon adjustForImage"
+                      style={{
+                        backgroundColor: "#d8dbe0",
+                        backgroundSize: "50%",
+                        borderRadius: "50%",
+                        padding: "10px",
+                        border: "1px solid black",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => {
+                        document.querySelector(
+                          ".super-main-post-container"
+                        ).style.display = "none";
+                      }}
+                    ></div>
+                  </div>
+                  <br />
+                  <div style={{ width: "100%" }}>
+                    <div
+                      style={{
+                        border: "1px solid black",
+                        padding: "3vw",
+                        backgroundColor: "#f2f4f7",
+                      }}
+                    >
+                      <div className="profile-image-container">
+                        <section
+                          className="profile-image adjustForImage"
+                          style={{
+                            width: "3vw",
+                            height: "3vw",
+                            borderRadius: "50%",
+                          }}
+                        ></section>
+                        <section>
+                          <h1>Chetan Timsina</h1>
+                          <button style={{ padding: "0.2vw" }}>Friends</button>
+                        </section>
+                      </div>
+                      <form method="POST" onSubmit={handlePost}>
+                        <section className="post-input-container">
+                          <input
+                            type="text"
+                            placeholder="What's on you mind, Chetan?"
+                            onChange={(e) => setText(e.target.value)}
+                          />
+                          <div
+                            className="adjustForImage"
+                            style={{
+                              backgroundImage: "url(reaction/emoji/happy.svg)",
+                              width: "2vw",
+                              height: "2vw",
+                            }}
+                          ></div>
+                        </section>
+                        <section className="post-submit-container">
+                          <div
+                            className="file-upload"
+                            style={{ position: "relative" }}
+                          >
+                            <label
+                              htmlFor="fileInput"
+                              style={{
+                                backgroundImage: image
+                                  ? `url(${image})`
+                                  : "none",
+                                backgroundSize: "cover",
+                                backgroundPosition: "center",
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                cursor: "pointer",
+                                width: "100%",
+                                height: "200px",
+                                border: "2px dashed #ccc",
+                                borderRadius: "10px",
+                                position: "relative",
+                              }}
+                            >
+                              {!image && (
+                                <>
+                                  <div className="upload-image"></div>
+                                  <span>Upload Image</span>
+                                </>
+                              )}
+                            </label>
+
+                            <input
+                              type="file"
+                              id="fileInput"
+                              onChange={handleFileChange}
+                            />
+
+                            {image && (
+                              <button
+                                type="button"
+                                onClick={removeImage}
+                                style={{
+                                  position: "absolute",
+                                  top: "10px",
+                                  right: "10px",
+                                  backgroundColor: "rgba(0, 0, 0, 0.6)",
+                                  color: "#fff",
+                                  border: "none",
+                                  padding: "5px 10px",
+                                  borderRadius: "5px",
+                                  cursor: "pointer",
+                                }}
+                              >
+                                Remove
+                              </button>
+                            )}
+                          </div>
+                          <input
+                            type="submit"
+                            style={{
+                              backgroundColor: "#64e968",
+                              border: "1px solid black",
+                              height: "3vw",
+                            }}
+                            value="Post"
+                          ></input>
+                        </section>
+                      </form>
+                    </div>
+                  </div>
+                </section>
+              </div>
               <button>
                 <img
                   src="https://static.xx.fbcdn.net/rsrc.php/v4/yd/r/Y4mYLVOhTwq.png"
@@ -347,10 +627,36 @@ export default function Home() {
           </div>
 
           {/* <!-- Post Section--> */}
+          {/* <div>
+            {posts.length === 0 ? (
+              <p>No posts found 😢</p>
+            ) : (
+              posts.map((post) => (
+                <div key={post.postid}>
+                  <h3>{post.postTitle}</h3>
+                  <p>{post.postDescription}</p>
+
+                  {post.postImage ? (
+                    <img
+                      src={`data:image/png;base64,${post.postImage}`}
+                      alt="Post"
+                      style={{ width: "300px", height: "auto" }}
+                      onError={(e) => {
+                        console.error("🧨 Image load failed", e);
+                      }}
+                    />
+                  ) : (
+                    <p>No image found 😔</p>
+                  )}
+
+                  <hr />
+                </div>
+              ))
+            )}
+          </div> */}
 
           <div id="post-container-area"></div>
         </div>
-
         {/* <!-- RIGHT SECTION --> */}
 
         <div className="box" id="box-right">
@@ -379,13 +685,13 @@ export default function Home() {
             </div>
             <div
               className="contact-container"
-              style={{ overflowY: "scroll", height: "23vw" }}
+              style={{ overflowY: "scroll", height: "25vw" }}
             >
               <div style={{ display: "none" }}>
                 <section className="friend-template aic flex">
                   <div className="box-right-icon adjustForImage">
                     <span className="absolute top-0 left-full -translate-x-1/2 -translate-y-1/2 p-1 border-2 border-gray-100 bg-green-600 rounded-full">
-                      <span className="sr-only">New alerts</span>
+                      {/* <span className="sr-only">New alerts</span> */}
                     </span>
                   </div>
                   <h6 className="contact-name"></h6>

@@ -1,24 +1,26 @@
 "use client";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation"; // 🛩️
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie"; // For setting cookies after login
 
 import "../local.css";
 
 const Register = () => {
-  const router = useRouter(); // to programmatically redirect
+  const router = useRouter(); // For redirecting programmatically
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [loading, setLoading] = useState(false); // Loading state
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage("");
     setSuccessMessage("");
+    setLoading(true);
 
     try {
-      // 👾 First, TRY to register
       const registerResponse = await fetch("/api/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -28,14 +30,18 @@ const Register = () => {
       const registerData = await registerResponse.json();
 
       if (registerResponse.ok) {
-        // 🎯 Registration Success
+        // 🎯 Success
         setSuccessMessage("Account created successfully! Logging you in...");
-        // Optionally auto login here, but let's just route them
         setTimeout(() => {
-          router.push("/"); // 🛫 send to homepage
+          // Set user info in cookie after registration
+          Cookies.set("vibeUser", registerData.userId, {
+            expires: 365 * 100,
+            path: "/",
+          });
+          router.push("/"); // 🛫 Redirect to homepage
         }, 1000);
       } else if (registerData.error === "User already exists 🚨") {
-        // 🧠 If user already exists, then TRY login instead
+        // 🧠 Try login
         const loginResponse = await fetch("/api/users", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -46,8 +52,12 @@ const Register = () => {
 
         if (loginResponse.ok) {
           setSuccessMessage("Login successful! Redirecting...");
+          Cookies.set("vibeUser", loginData.userId, {
+            expires: 365 * 100,
+            path: "/",
+          });
           setTimeout(() => {
-            router.push("/");
+            router.push("/"); // 🛫 Redirect to homepage
           }, 1000);
         } else {
           setErrorMessage(loginData.error || "Login failed!");
@@ -58,12 +68,20 @@ const Register = () => {
     } catch (error) {
       console.error(error);
       setErrorMessage("Something went wrong, please try again later.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div
-      style={{ marginTop: "7vw", display: "flex", justifyContent: "center" }}
+      style={{
+        marginTop: "7vw",
+        display: "flex",
+        justifyContent: "center",
+        backgroundColor: "#f2f4f7",
+        height: "100vh",
+      }}
     >
       <section id="right-section">
         <form onSubmit={handleSubmit}>
@@ -75,7 +93,7 @@ const Register = () => {
             required
           />
           <input
-            type="text"
+            type="email"
             placeholder="Email address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -88,11 +106,16 @@ const Register = () => {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <input type="submit" value="Register / Login" />
-          {errorMessage && <h4 style={{ color: "red" }}>{errorMessage}</h4>}
-          {successMessage && (
-            <h4 style={{ color: "green" }}>{successMessage}</h4>
-          )}
+          <input
+            type="submit"
+            value={loading ? "Loading..." : "Register / Login"}
+            disabled={loading}
+          />
+          <br />
+          <br />
+          <a className="back_to_login" href="/InitialPage">
+            back to login
+          </a>
         </form>
       </section>
     </div>

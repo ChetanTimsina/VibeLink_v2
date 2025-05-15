@@ -52,11 +52,13 @@ const ForgotPassword = () => {
         display: "flex",
         justifyContent: "center",
         marginTop: "7vw",
+        height: "100vh",
+        backgroundColor: "#f2f4f7",
       }}
     >
       <form
         onSubmit={handleSubmit}
-        style={{ textAlign: "left" }}
+        style={{ textAlign: "left", position: "relative" }}
         className="forgot-password-form"
       >
         <h1 style={{ color: "#0866ff" }}>VibeLink</h1>

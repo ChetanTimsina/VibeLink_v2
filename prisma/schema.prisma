@@ -13,8 +13,37 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 model VibeUserTable {
-  id Int @id @default(autoincrement())
-  username String @unique
-  email String @unique
-  password String
+  id          Int           @id @default(autoincrement())
+  username    String        @unique
+  email       String        @unique
+  userImage Bytes?
+  password    String
+  isAdmin     Boolean       @default(false)
+
+  friends     FriendList[]  @relation("UserToFriends")
+  friendedBy  FriendList[]  @relation("FriendToUser")
+  posts       Post[]        @relation("UserPosts")
+}
+
+model FriendList {
+  id        Int           @id @default(autoincrement())
+  userId    Int
+  friendId  Int
+
+  user      VibeUserTable @relation("UserToFriends", fields: [userId], references: [id])
+  friend    VibeUserTable @relation("FriendToUser", fields: [friendId], references: [id])
+
+  @@unique([userId, friendId])
+}
+
+model Post {
+  postid          Int           @id @default(autoincrement())
+  postTitle       String
+  postDescription String
+  postImage      Bytes
+  createdAt       DateTime      @default(now())
+  postLikes Int @default(0)
+
+  authorId        Int 
+  author          VibeUserTable @relation("UserPosts", fields: [authorId], references: [id])
 }

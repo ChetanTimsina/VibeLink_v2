@@ -5,7 +5,15 @@ import Image from "next/image";
 import "../local.css";
 import "@/app/globals.css";
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 const Header = () => {
+  const router = useRouter();
+
+  const handleLogout = () => {
+    Cookies.remove("isLoggedIn");
+    router.push("/InitialPage");
+  };
   useEffect(() => {
     document.getElementById("account-container").style.display = "none";
     document.getElementById("notification-container").style.display = "none";
@@ -222,9 +230,9 @@ const Header = () => {
                     id="icon-5"
                     className="icon-container adjustForImage"
                   ></section>
-                  <a href="/InitialPage">
-                    <h6>Log Out</h6>
-                  </a>
+                  <h6 onClick={handleLogout} style={{ cursor: "pointer" }}>
+                    Log Out
+                  </h6>
                 </div>
               </section>
             </div>
