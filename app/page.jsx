@@ -227,8 +227,7 @@ export default function Home() {
       postContainer.innerHTML = "";
     }
 
-    allPosts.forEach((post) => {
-      const friend = friends.find((f) => f.id === post.authorId);
+    for (const post of allPosts) {
       const postClone = postTemplate.cloneNode(true);
       postClone.style.display = "block";
 
@@ -255,11 +254,35 @@ export default function Home() {
         });
       }
 
-      // 📝 Set post author (using friend info)
-      const postAuthor = postClone.querySelector(".post-title");
-      if (postAuthor) {
-        postAuthor.textContent = friend?.username || "Untitled Post";
+      async function getAuthorUsername(postid) {
+        try {
+          const res = await fetch(`/api/getAuthor?postid=${postid}`);
+          if (!res.ok) throw new Error("Failed to fetch author");
+
+          const data = await res.json();
+          return data.username || "Unknown Author";
+        } catch (err) {
+          console.error(err);
+          return "Unknown Author";
+        }
       }
+      async function setPostAuthor(postClone, postid) {
+        const postAuthor = postClone.querySelector(".post-name");
+        if (postAuthor) {
+          const username = await getAuthorUsername(postid);
+          postAuthor.textContent = username;
+        }
+      }
+      const post_created_at = postClone.querySelector(".post-created-at");
+      const dateObj = new Date(post.postCreatedAt);
+      const formattedDate = `${String(dateObj.getDate()).padStart(
+        2,
+        "0"
+      )}/${String(dateObj.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}/${dateObj.getFullYear()}`;
+      post_created_at.textContent = formattedDate;
 
       // 🧾 Set post description
       const postDescription = postClone.querySelector(".post-description");
@@ -270,9 +293,9 @@ export default function Home() {
 
       // 🆔 Set post ID (optional display or data attribute)
       postClone.setAttribute("data-post-id", post.postid);
-
+      await setPostAuthor(postClone, post.postid);
       postContainer.appendChild(postClone);
-    });
+    }
   }
 
   useEffect(() => {
@@ -622,7 +645,7 @@ export default function Home() {
                     <p className="post-name">
                       <b>Kuchi Bigboy</b>
                     </p>
-                    <p>April 10 at 3:54PM</p>
+                    <p className="post-created-at">April 10 at 3:54PM</p>
                   </div>
                 </div>
                 <div className="flex" style={{ gap: "2vw" }}>

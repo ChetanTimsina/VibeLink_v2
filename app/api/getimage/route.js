@@ -33,6 +33,7 @@ export async function GET(req) {
         postDescription: post.postDescription,
         postImage: base64Image,
         postLikes: post.postLikes,
+        postCreatedAt: post.createdAt,
       };
     });
     return NextResponse.json(formattedPosts);
