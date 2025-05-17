@@ -757,11 +757,7 @@ export default function Home() {
             >
               <div style={{ display: "none" }}>
                 <section className="friend-template aic flex">
-                  <div className="box-right-icon adjustForImage">
-                    <span className="absolute top-0 left-full -translate-x-1/2 -translate-y-1/2 p-1 border-2 border-gray-100 bg-green-600 rounded-full">
-                      {/* <span className="sr-only">New alerts</span> */}
-                    </span>
-                  </div>
+                  <div className="box-right-icon adjustForImage"></div>
                   <h6 className="contact-name"></h6>
                 </section>
               </div>

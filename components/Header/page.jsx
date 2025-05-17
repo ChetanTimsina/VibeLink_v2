@@ -141,8 +141,8 @@ const Header = () => {
                 <div style={{ display: "none" }}>
                   <section className="friend-template flex gap-2 aic">
                     <div className="box-right-icon adjustForImage">
-                      <span className="position-absolute top-0 start-100 translate-middle p-1 border border-light border-2 bg-success rounded-circle">
-                        <span className="visually-hidden">New alerts</span>
+                      <span className="status-indicator">
+                        <span className="sr-only">Online</span>
                       </span>
                     </div>
                     <h6 className="contact-name"></h6>
