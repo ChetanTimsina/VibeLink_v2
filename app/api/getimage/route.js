@@ -1,32 +1,30 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { prisma } from "../../lib/prisma";
 
-export async function GET() {
+export async function GET(req) {
   try {
-    const cookieStore = await cookies();
-    const userId = cookieStore.get("vibeUser")?.value;
+    const { searchParams } = new URL(req.url);
+    const friendIdParam = searchParams.get("friendid");
+    const friendId = parseInt(friendIdParam);
 
-    if (!userId) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-    }
-
-    const numericUserId = parseInt(userId);
-    if (isNaN(numericUserId)) {
+    if (isNaN(friendId)) {
       return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
     }
 
-    const posts = await prisma.post.findMany({
-      where: { authorId: numericUserId },
+    // 👥 Fetch all posts from those friends
+    const posts = await prisma.Post.findMany({
+      where: {
+        authorId: friendId,
+      },
     });
 
-    // 🧠 Convert Uint8Array to base64 properly
+    // 🧠 Format posts
     const formattedPosts = posts.map((post) => {
       let base64Image = null;
 
       if (post.postImage) {
-        const buffer = Buffer.from(post.postImage); // 👈 turn Uint8Array to Buffer
-        base64Image = buffer.toString("base64"); // 👈 now base64 will work
+        const buffer = Buffer.from(post.postImage);
+        base64Image = buffer.toString("base64");
       }
 
       return {
@@ -34,12 +32,12 @@ export async function GET() {
         postTitle: post.postTitle,
         postDescription: post.postDescription,
         postImage: base64Image,
+        postLikes: post.postLikes,
       };
     });
-
     return NextResponse.json(formattedPosts);
   } catch (error) {
-    console.error("🔥 Failed to fetch images:", error);
+    console.error("🔥 Failed to fetch friends' posts:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

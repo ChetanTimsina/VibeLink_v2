@@ -4,22 +4,26 @@ import "./local.css";
 import "./localsecond.css";
 import Link from "next/link";
 import Cookies from "js-cookie";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [friends, setFriends] = useState([]);
   const [text, setText] = useState("");
   const [image, setImage] = useState(null);
+  const [ImagePreview, setImagePreview] = useState(null);
+  const [userName, setuserName] = useState(null);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setImage(URL.createObjectURL(file));
+      setImagePreview(URL.createObjectURL(file)); // for showing preview
+      setImage(file); // real file for upload
     }
   };
 
   const removeImage = () => {
+    setImagePreview(null);
     setImage(null);
     document.getElementById("fileInput").value = ""; // reset file input manually
   };
@@ -53,10 +57,13 @@ export default function Home() {
 
       if (res.ok) {
         console.log("Post uploaded successfully");
+        alert("Post uploaded successfully");
         setText("");
+        setImagePreview(null);
         setImage(null);
+        createPosts();
       } else {
-        console.error("Failed to upload post");
+        alert("Post uploaded error");
       }
     } catch (err) {
       console.error("Error uploading post:", err);
@@ -177,35 +184,59 @@ export default function Home() {
     //   }
     // }
   }, [friends]);
+
   const [posts, setPosts] = useState([]);
+  const postTemplateRef = useRef(null);
+  const postContainerRef = useRef(null);
 
   useEffect(() => {
-    const fetchImages = async () => {
+    postTemplateRef.current = document.querySelector(".post-container");
+    postContainerRef.current = document.querySelector("#post-container-area");
+  }, []);
+  async function createPosts() {
+    const allPosts = []; // Accumulate posts here
+
+    for (const friend of friends) {
       try {
-        const res = await fetch("/api/getimage"); // API you just made
+        const res = await fetch(`/api/getimage?friendid=${friend.id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
         if (!res.ok) throw new Error("Failed to fetch images");
 
         const data = await res.json();
-        setPosts(data);
+
+        // Add fetched posts to accumulator
+        allPosts.push(...data);
       } catch (err) {
         console.error("Image fetch error 💥:", err);
       }
-    };
+    }
 
-    fetchImages();
-  }, []);
+    setPosts(allPosts);
+    console.log("✅ Posts state updated:", allPosts);
 
-  const postTemplate = document.querySelector(".post-container");
-  const postContainer = document.querySelector("#post-container-area");
-  async function createPosts() {
-    console.log("Posts data:", posts);
+    // Render posts after state update
+    const postTemplate = postTemplateRef.current;
+    const postContainer = postContainerRef.current;
 
-    const postDataPromises = posts.map(async (post) => {
+    if (postContainer) {
+      postContainer.innerHTML = "";
+    }
+
+    allPosts.forEach((post) => {
+      const friend = friends.find((f) => f.id === post.authorId);
       const postClone = postTemplate.cloneNode(true);
       postClone.style.display = "block";
 
       // 🖼️ Set post image (base64 from DB)
       const postImage = postClone.querySelector(".post-image");
+      const postTitleLocal = postClone.querySelector(".post-title-local");
+      const reactCount = postClone.querySelector(".react-count");
+
       if (postImage) {
         if (post.postImage) {
           postImage.style.backgroundImage = `url("data:image/png;base64,${post.postImage}")`;
@@ -214,10 +245,20 @@ export default function Home() {
         }
       }
 
-      // 📝 Set post title
-      const postTitle = postClone.querySelector(".post-title");
-      if (postTitle) {
-        postTitle.textContent = post.postTitle || "Untitled Post";
+      postTitleLocal.innerHTML = post.postTitle;
+      reactCount.innerHTML = post.postLikes ?? 0;
+
+      const wrongIcon = postClone.querySelector(".wrong-icon");
+      if (wrongIcon) {
+        wrongIcon.addEventListener("click", () => {
+          postClone.style.display = "none";
+        });
+      }
+
+      // 📝 Set post author (using friend info)
+      const postAuthor = postClone.querySelector(".post-title");
+      if (postAuthor) {
+        postAuthor.textContent = friend?.username || "Untitled Post";
       }
 
       // 🧾 Set post description
@@ -232,13 +273,11 @@ export default function Home() {
 
       postContainer.appendChild(postClone);
     });
-
-    await Promise.all(postDataPromises);
   }
 
-  createPosts();
-  console.log("afdshg");
-  console.log(posts);
+  useEffect(() => {
+    createPosts();
+  }, [friends]);
 
   return (
     <main id="main-container">
@@ -441,8 +480,8 @@ export default function Home() {
                             <label
                               htmlFor="fileInput"
                               style={{
-                                backgroundImage: image
-                                  ? `url(${image})`
+                                backgroundImage: ImagePreview
+                                  ? `url(${ImagePreview})`
                                   : "none",
                                 backgroundSize: "cover",
                                 backgroundPosition: "center",
@@ -498,6 +537,11 @@ export default function Home() {
                               backgroundColor: "#64e968",
                               border: "1px solid black",
                               height: "3vw",
+                            }}
+                            onClick={() => {
+                              document.querySelector(
+                                ".super-main-post-container"
+                              ).style.display = "none";
                             }}
                             value="Post"
                           ></input>
@@ -586,6 +630,7 @@ export default function Home() {
                   <section className="wrong-icon adjustForImage"></section>
                 </div>
               </section>
+              <h3 className="post-title-local">Post title or description</h3>
               <div className="post-image"></div>
               <hr />
               <div className="flex aic justify-content-between">
@@ -704,3 +749,76 @@ export default function Home() {
     </main>
   );
 }
+// //
+// const [image, setImage] = useState(null);
+//   const [ImagePreview, setImagePreview] = useState(null);
+
+//   const removeImage = () => {
+//     setImagePreview(null);
+//     setImage(null);
+//     document.getElementById("fileInput").value = ""; // reset file input manually
+//   };
+
+//   const handleFileChange = (e) => {
+//     const file = e.target.files[0];
+//     if (file) {
+//       setImagePreview(URL.createObjectURL(file)); // for showing preview
+//       setImage(file); // real file for upload
+//     }
+//   };
+
+//    <div className="file-upload" style={{ position: "relative" }}>
+//             <label
+//               htmlFor="fileInput"
+//               style={{
+//                 backgroundImage: ImagePreview ? `url(${ImagePreview})` : "none",
+//                 backgroundSize: "cover",
+//                 backgroundPosition: "center",
+//                 display: "flex",
+//                 flexDirection: "column",
+//                 alignItems: "center",
+//                 justifyContent: "center",
+//                 cursor: "pointer",
+//                 width: "10vw",
+//                 height: "10vw",
+//                 border: "2px solid black",
+//                 borderRadius: "50%",
+//                 position: "relative",
+//                 margin: "1vw auto",
+//               }}
+//             >
+//               {!image && (
+//                 <>
+//                   <div className="upload-image"></div>
+//                   <span>Upload Profile</span>
+//                 </>
+//               )}
+//             </label>
+
+//             <input
+//               type="file"
+//               id="fileInput"
+//               onChange={handleFileChange}
+//               style={{ display: "none" }}
+//             />
+
+//             {image && (
+//               <button
+//                 type="button"
+//                 onClick={removeImage}
+//                 style={{
+//                   position: "absolute",
+//                   top: "10px",
+//                   right: "10px",
+//                   backgroundColor: "rgba(0, 0, 0, 0.6)",
+//                   color: "#fff",
+//                   border: "none",
+//                   padding: "5px 10px",
+//                   borderRadius: "5px",
+//                   cursor: "pointer",
+//                 }}
+//               >
+//                 Remove
+//               </button>
+//             )}
+//           </div>

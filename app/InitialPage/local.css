@@ -52,8 +52,7 @@
 #right-section > form {
   background-color: white;
   width: 29vw;
-  height: 25vw;
-  padding: 1vw;
+  padding: 1vw 1vw 2vw;
   border-radius: 0.5vw;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
   text-align: center;

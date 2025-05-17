@@ -4,13 +4,12 @@ const prisma = new PrismaClient(); // create instance bro
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { username, email, password } = body;
+    const { username, password } = body;
 
     // Find the user
     const user = await prisma.vibeUserTable.findFirst({
       where: {
         username,
-        email,
         password, // 😶‍🌫️ reminder: you should hash passwords later bro fr
       },
     });
