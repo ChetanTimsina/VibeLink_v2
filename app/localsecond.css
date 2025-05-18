@@ -63,6 +63,9 @@
 #fileInput {
   display: none;
 }
+#SfileInput {
+  display: none;
+}
 .file-upload label {
   display: flex;
   align-items: center;

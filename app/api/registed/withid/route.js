@@ -25,7 +25,7 @@ export async function POST(request) {
       });
     }
 
-    return new Response(JSON.stringify({ username: user.username }), {
+    return new Response(JSON.stringify({ user: user }), {
       status: 200,
       headers: {
         "Content-Type": "application/json",

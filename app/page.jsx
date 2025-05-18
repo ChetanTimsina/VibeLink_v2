@@ -6,13 +6,58 @@ import Link from "next/link";
 import Cookies from "js-cookie";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import FriendRequest from "./friend/friend-left/friendRequest/page";
 
 export default function Home() {
-  const [friends, setFriends] = useState([]);
   const [text, setText] = useState("");
   const [image, setImage] = useState(null);
   const [ImagePreview, setImagePreview] = useState(null);
-  const [userName, setuserName] = useState(null);
+  const [user, setUser] = useState(null);
+
+  const getBase64FromBuffer = (bufferData) => {
+    if (!bufferData) return null;
+
+    // Prisma might send it as an object with keys as indexes or a data property
+    const byteArray = bufferData.data
+      ? new Uint8Array(bufferData.data)
+      : new Uint8Array(Object.values(bufferData));
+
+    let binary = "";
+    byteArray.forEach((b) => (binary += String.fromCharCode(b)));
+    return btoa(binary);
+  };
+
+  // Profile image src with base64 fallback
+  const profileImageSrc = user?.userImage
+    ? `data:image/png;base64,${getBase64FromBuffer(user.userImage)}`
+    : "/Images/profile.svg";
+
+  useEffect(() => {
+    const userId = Cookies.get("vibeUser");
+    if (!userId) return;
+
+    const fetchUsername = async () => {
+      try {
+        const res = await fetch("/api/registed/withid", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: parseInt(userId) }),
+        });
+
+        if (!res.ok) throw new Error("Failed to fetch user");
+
+        const data = await res.json();
+        setUser(data.user);
+      } catch (error) {
+        console.error("Fetch error:", error);
+        setUser({ username: "Unknown" });
+      }
+    };
+
+    fetchUsername();
+  }, []);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -25,6 +70,8 @@ export default function Home() {
   const removeImage = () => {
     setImagePreview(null);
     setImage(null);
+
+    document.querySelector;
     document.getElementById("fileInput").value = ""; // reset file input manually
   };
   const handlePost = async (e) => {
@@ -81,6 +128,8 @@ export default function Home() {
       router.push("/InitialPage");
     }
   }, [router]);
+
+  const [friends, setFriends] = useState([]);
 
   useEffect(() => {
     const fetchFriends = async () => {
@@ -149,40 +198,42 @@ export default function Home() {
     // }
 
     friends.forEach((friend) => {
+      const friendImageSrc = friend?.userImage
+        ? `data:image/png;base64,${getBase64FromBuffer(friend.userImage)}`
+        : "/Images/profile.svg";
+      const storyImageSrc = friend?.story
+        ? `data:image/png;base64,${getBase64FromBuffer(friend.story)}`
+        : "/Images/profile.svg";
+
       contact_containers.forEach((contact_container) => {
         const friendClone = friend_template.cloneNode(true);
         friendClone.style.display = "flex";
         friendClone.querySelector(".contact-name").textContent =
           friend.username;
+
         friendClone.querySelector(
           ".box-right-icon"
-        ).style.backgroundImage = `url("https://i.pravatar.cc/100?u=${randomSeed}")`; // PUT FRIENDS LOGO HERE
-        randomSeed++;
+        ).style.backgroundImage = `url('${friendImageSrc}')`;
+
         contact_container.appendChild(friendClone);
       });
-    });
-    randomSeed = new Date().getTime();
-    for (let i = 1; i <= 15; i++) {
-      const element = document.querySelector(`.right-icon-${i}`);
-      if (element) {
-        element.style.backgroundImage = `url("https://i.pravatar.cc/100?u=${randomSeed}")`;
-      }
-      randomSeed++;
-    }
-    for (let i = 1; i <= 8; i++) {
-      const randomSeed = Math.floor(Math.random() * 100000);
-      const element = document.getElementById(`story-${i}`);
-      if (element) {
-        element.style.backgroundImage = `url("https://picsum.photos/360/640?random=${randomSeed}")`;
-      }
-    }
 
-    // for (let i = 1; i <= 3; i++) {
-    //   const element = document.querySelector(`.react-${i}`);
-    //   if (element) {
-    //     element.style.backgroundImage = `url("reaction/react-${i}.jpg")`;
-    //   }
-    // }
+      const storyCard = document.querySelector(".story-card").cloneNode(true);
+      const story_card_container = document.querySelector(
+        ".story-card-container"
+      );
+      storyCard.style.display = "block";
+      storyCard.querySelector(".story-person-name").innerText = friend.username;
+
+      storyCard.querySelector(
+        ".box-right-icon"
+      ).style.backgroundImage = `url('${friendImageSrc}')`;
+
+      storyCard.style.backgroundImage = `url('${storyImageSrc}')`;
+      if (!(storyImageSrc === "/Images/profile.svg")) {
+        story_card_container.appendChild(storyCard);
+      }
+    });
   }, [friends]);
 
   const [posts, setPosts] = useState([]);
@@ -231,6 +282,16 @@ export default function Home() {
       const postClone = postTemplate.cloneNode(true);
       postClone.style.display = "block";
 
+      const res = await fetch("/api/getAuthor/getAuthorName", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ postId: post.postid }),
+      });
+      const data = await res.json();
+      const postAuthorImageSrc = data?.userImage
+        ? `data:image/png;base64,${getBase64FromBuffer(data.userImage)}`
+        : "/Images/profile.svg";
+
       // 🖼️ Set post image (base64 from DB)
       const postImage = postClone.querySelector(".post-image");
       const postTitleLocal = postClone.querySelector(".post-title-local");
@@ -266,6 +327,10 @@ export default function Home() {
           return "Unknown Author";
         }
       }
+
+      postClone.querySelector(
+        "#post-icon"
+      ).style.backgroundImage = `url(${postAuthorImageSrc})`;
       async function setPostAuthor(postClone, postid) {
         const postAuthor = postClone.querySelector(".post-name");
         if (postAuthor) {
@@ -308,8 +373,20 @@ export default function Home() {
         {/* <!-- LEFT SECTION --> */}
         <div className="box" id="box-left">
           <section>
-            <div className="box-left-icon profile-image"></div>
-            <h6>Chetan Timsina</h6>
+            <div
+              className="box-left-icon profile-image"
+              style={{
+                backgroundImage: `url(${profileImageSrc})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                cursor: "pointer",
+                border: "1px solid black",
+              }}
+              onClick={() => {
+                router.push("/profile");
+              }}
+            ></div>
+            <h6>{user?.username}</h6>
             {/* <!-- Change the profile name later --> */}
           </section>
           <section>
@@ -401,7 +478,19 @@ export default function Home() {
         <div className="box hide-scrollbar" id="box-center">
           <div id="center-top">
             <div className="nav-top">
-              <div className="profile-image adjustForImage nav-right"></div>
+              <div
+                className="profile-image adjustForImage nav-right"
+                style={{
+                  backgroundImage: `url(${profileImageSrc})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  cursor: "pointer",
+                  border: "1px solid black",
+                }}
+                onClick={() => {
+                  router.push("/profile");
+                }}
+              ></div>
               <input
                 type="search"
                 placeholder="What's on your mind?"
@@ -472,10 +561,15 @@ export default function Home() {
                             width: "3vw",
                             height: "3vw",
                             borderRadius: "50%",
+                            backgroundImage: `url(${profileImageSrc})`,
+                            backgroundSize: "cover",
+                            backgroundPosition: "center",
+                            cursor: "pointer",
+                            border: "1px solid black",
                           }}
                         ></section>
                         <section>
-                          <h1>Chetan Timsina</h1>
+                          <h1>{user?.username}</h1>
                           <button style={{ padding: "0.2vw" }}>Friends</button>
                         </section>
                       </div>
@@ -483,7 +577,8 @@ export default function Home() {
                         <section className="post-input-container">
                           <input
                             type="text"
-                            placeholder="What's on you mind, Chetan?"
+                            className="title-text"
+                            placeholder="Enter the title of the Post"
                             onChange={(e) => setText(e.target.value)}
                           />
                           <div
@@ -586,50 +681,34 @@ export default function Home() {
           {/* <!-- Story Section--> */}
           <div id="story-container" className="flex hide-scrollbar">
             <section className="story-card-alternate">
-              <div className="main-story adjustForImage">
-                <div id="add-story" className="adjustForImage"></div>
+              <div
+                className="main-story adjustForImage"
+                style={{
+                  backgroundImage: `url(${profileImageSrc})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  cursor: "pointer",
+                }}
+                onClick={() => {
+                  router.push("/profile");
+                }}
+              >
+                <div
+                  id="add-story"
+                  className="adjustForImage"
+                  onClick={() => {
+                    router.push("/profile");
+                  }}
+                ></div>
               </div>
               <h6>Create Story</h6>
             </section>
-            <section className="story-card" id="story-1">
-              <div className="box-right-icon adjustForImage right-icon-1 story-profile"></div>
-              <h6 className="story-person-name">NGAWANG PEMA</h6>
-            </section>
-
-            <section className="story-card" id="story-2">
-              <div className="box-right-icon adjustForImage right-icon-2 story-profile"></div>
-              <h6 className="story-person-name">JIGME TSHEWANG</h6>
-            </section>
-
-            <section className="story-card" id="story-3">
-              <div className="box-right-icon adjustForImage right-icon-3 story-profile"></div>
-              <h6 className="story-person-name">KEZANG TSHOMO</h6>
-            </section>
-
-            <section className="story-card" id="story-4">
-              <div className="box-right-icon adjustForImage right-icon-4 story-profile"></div>
-              <h6 className="story-person-name">UGYEN WANGMO</h6>
-            </section>
-
-            <section className="story-card" id="story-5">
-              <div className="box-right-icon adjustForImage right-icon-5 story-profile"></div>
-              <h6 className="story-person-name">DAMBER KHATIWARA</h6>
-            </section>
-
-            <section className="story-card" id="story-6">
-              <div className="box-right-icon adjustForImage right-icon-6 story-profile"></div>
-              <h6 className="story-person-name">PHUB DORJI</h6>
-            </section>
-
-            <section className="story-card" id="story-7">
-              <div className="box-right-icon adjustForImage right-icon-7 story-profile"></div>
-              <h6 className="story-person-name">YESHI WANGMO</h6>
-            </section>
-
-            <section className="story-card" id="story-8">
-              <div className="box-right-icon adjustForImage right-icon-8 story-profile"></div>
-              <h6 className="story-person-name">PRIYLink GHIMIRAY</h6>
-            </section>
+            <div className="story-card-container" style={{ display: "flex" }}>
+              <section className="story-card" style={{ display: "none" }}>
+                <div className="box-right-icon adjustForImage right-icon-1 story-profile"></div>
+                <h6 className="story-person-name">User Name</h6>
+              </section>
+            </div>
           </div>
 
           {/* <!-- Post Template --> */}
@@ -674,6 +753,7 @@ export default function Home() {
                     className="post-bottom-icon adjustForImage"
                     id="react"
                   ></div>
+                  <div></div>
                   <p>Like</p>
                 </section>
                 <section className="post-bottom-icon-container">

@@ -130,7 +130,8 @@ nav > ul {
   height: 50%;
 }
 .profile-image {
-  background-image: url(/Images/nav-right-profile.jpg);
+  background-image: url(/Images/profile.svg);
+  cursor: pointer;
 }
 #account-container {
   position: absolute;

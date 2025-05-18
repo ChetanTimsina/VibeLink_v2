@@ -19,7 +19,8 @@ model VibeUserTable {
   userImage Bytes?
   password    String
   isAdmin     Boolean       @default(false)
-
+  story Bytes?
+  
   friends     FriendList[]  @relation("UserToFriends")
   friendedBy  FriendList[]  @relation("FriendToUser")
   posts       Post[]        @relation("UserPosts")

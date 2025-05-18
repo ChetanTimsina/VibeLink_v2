@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import "../local.css";
@@ -8,6 +8,52 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 const Header = () => {
+  const [user, setUser] = useState(null);
+
+  const getBase64FromBuffer = (bufferData) => {
+    if (!bufferData) return null;
+
+    // Prisma might send it as an object with keys as indexes or a data property
+    const byteArray = bufferData.data
+      ? new Uint8Array(bufferData.data)
+      : new Uint8Array(Object.values(bufferData));
+
+    let binary = "";
+    byteArray.forEach((b) => (binary += String.fromCharCode(b)));
+    return btoa(binary);
+  };
+
+  // Profile image src with base64 fallback
+  const profileImageSrc = user?.userImage
+    ? `data:image/png;base64,${getBase64FromBuffer(user.userImage)}`
+    : "/Images/profile.svg";
+
+  useEffect(() => {
+    const userId = Cookies.get("vibeUser");
+    if (!userId) return;
+
+    const fetchUsername = async () => {
+      try {
+        const res = await fetch("/api/registed/withid", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: parseInt(userId) }),
+        });
+
+        if (!res.ok) throw new Error("Failed to fetch user");
+
+        const data = await res.json();
+        setUser(data.user);
+      } catch (error) {
+        console.error("Fetch error:", error);
+        setUser({ username: "Unknown" });
+      }
+    };
+
+    fetchUsername();
+  }, []);
   const router = useRouter();
 
   const handleLogout = () => {
@@ -177,6 +223,13 @@ const Header = () => {
           </section>
           <section
             className="nav-right profile-image adjustForImage"
+            style={{
+              backgroundImage: `url(${profileImageSrc})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              border: "1px solid black",
+              cursor: "pointer",
+            }}
             id="Account"
           >
             <div id="account-container" style={{ display: "none" }}>
@@ -184,9 +237,17 @@ const Header = () => {
                 <section id="profile-info-inner">
                   <section
                     className="nav-right profile-image adjustForImage"
-                    style={{ width: "3vw", height: "3vw" }}
+                    style={{
+                      backgroundImage: `url(${profileImageSrc})`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                      cursor: "pointer",
+                      width: "3vw",
+                      border: "1px solid black",
+                      height: "3vw",
+                    }}
                   ></section>
-                  <h4>Chetan Timsina</h4>
+                  <h4>{user?.username}</h4>
                 </section>
                 <div className="hrLine"></div>
                 <section id="switchuser-container" className="flex jcc aic">

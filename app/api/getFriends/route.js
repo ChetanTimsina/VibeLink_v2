@@ -21,6 +21,8 @@ export async function POST(req) {
           select: {
             id: true,
             username: true,
+            userImage: true,
+            story: true,
           },
         },
       },

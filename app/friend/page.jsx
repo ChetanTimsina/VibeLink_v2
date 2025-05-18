@@ -1,45 +1,78 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import "@/app/globals.css";
 import "./local.css";
-import { useEffect } from "react";
+import Cookies from "js-cookie";
+
+const getBase64FromBuffer = (bufferData) => {
+  if (!bufferData) return null;
+
+  const byteArray = bufferData.data
+    ? new Uint8Array(bufferData.data)
+    : new Uint8Array(Object.values(bufferData));
+
+  let binary = "";
+  byteArray.forEach((b) => (binary += String.fromCharCode(b)));
+  return btoa(binary);
+};
 
 const Friend = () => {
+  const [nonFriends, setNonFriends] = useState([]);
+
   useEffect(() => {
-    let randomSeed = new Date().getTime();
-
-    // Friend Request
-    const friendTemplate = document.querySelector(".friend-container");
-    const friendContainer = document.querySelector("#friend-container-area");
-    for (let i = 0; i < 12; i++) {
-      const friendClone = friendTemplate.cloneNode(true);
-      friendClone.style.display = "block";
-      const friendImage = friendClone.querySelector(".friend-image");
-      if (friendImage) {
-        friendImage.style.backgroundImage = `url("https://i.pravatar.cc/100?u=${randomSeed}")`;
+    const fetchFriends = async () => {
+      const userId = Cookies.get("vibeUser");
+      if (!userId) return;
+      try {
+        const response = await fetch("/api/getNonFriends", {
+          method: "POST",
+          body: JSON.stringify({ userId }),
+          headers: { "Content-Type": "application/json" },
+        });
+        if (!response.ok) throw new Error("Fetch failed");
+        const data = await response.json();
+        setNonFriends(data);
+      } catch (err) {
+        console.error(err);
       }
-      friendContainer.appendChild(friendClone);
-      randomSeed++;
-    }
-
-    // Friend Suggestion
-    const friendSuggestTemplate = document.querySelector(".friend-container-2");
-    const friendSuggestContainer = document.querySelector(
-      "#friend-container-area-2"
-    );
-    for (let i = 0; i < 12; i++) {
-      const friendSuggestClone = friendSuggestTemplate.cloneNode(true);
-      friendSuggestClone.style.display = "block";
-      const friendSuggestImage =
-        friendSuggestClone.querySelector(".friend-image");
-      if (friendSuggestImage) {
-        friendSuggestImage.style.backgroundImage = `url("https://i.pravatar.cc/100?u=${randomSeed}")`;
-      }
-      friendSuggestContainer.appendChild(friendSuggestClone);
-      randomSeed++;
-    }
+    };
+    fetchFriends();
   }, []);
+
+  const friendSuggestionElements =
+    nonFriends.length === 0 ? (
+      <p>No friend suggestions at the moment.</p>
+    ) : (
+      nonFriends.map((person, idx) => {
+        const base64Image = getBase64FromBuffer(person.userImage);
+        const bgImageUrl = base64Image
+          ? `url("data:image/png;base64,${base64Image}")`
+          : "";
+
+        return (
+          <div
+            key={idx}
+            className="friend-container"
+            style={{ display: "block" }}
+          >
+            <div
+              className="friend-image adjustForImage"
+              style={{ backgroundImage: bgImageUrl }}
+            ></div>
+
+            <div className="text">
+              <h6 className="friend-name">{person.username}</h6>
+              <button style={{ backgroundColor: "blue", color: "white" }}>
+                Add Friend
+              </button>
+              <button style={{ backgroundColor: "#e2e5e9" }}>Remove</button>
+            </div>
+          </div>
+        );
+      })
+    );
+
   return (
     <main id="main-container" className="flex bg-white">
       <div className="box-left">
@@ -90,48 +123,17 @@ const Friend = () => {
       </div>
 
       <div className="box-main p-5">
-        {/* <!-- Friend Requests --> */}
-
+        {/* Friend Suggestions Header */}
         <div
           className="flex justify-between aic"
           style={{ marginBottom: "2vw" }}
         >
-          <h4 style={{ fontSize: "1.5vw" }}>Friend Requests</h4>
+          <h4 style={{ fontSize: "1.5vw" }}>Friend Suggestions</h4>
           <h6 style={{ color: "blue", fontSize: "1.5vw" }}>See all</h6>
         </div>
-        <div id="friend-container-area">
-          <div className="friend-container" style={{ display: "none" }}>
-            <div className="friend-image adjustForImage"></div>
 
-            <div className="text">
-              <h6>Spartacus Ganesh Aries</h6>
-              <button style={{ backgroundColor: "blue", color: "white" }}>
-                Confirm
-              </button>
-              <button style={{ backgroundColor: "#e2e5e9" }}>Delete</button>
-            </div>
-          </div>
-        </div>
-
-        {/* <!-- Friend Suggestion --> */}
-
-        <div className="flex justify-between" style={{ marginBottom: "2vw" }}>
-          <h4 style={{ fontSize: "1.5vw" }}>People you may know</h4>
-          <h6 style={{ color: "blue", fontSize: "1.5vw" }}>See all</h6>
-        </div>
-        <div id="friend-container-area-2">
-          <div className="friend-container-2" style={{ display: "none" }}>
-            <div className="friend-image adjustForImage"></div>
-
-            <div className="text">
-              <h6>Siri Zawa</h6>
-              <button style={{ color: "blue", backgroundColor: "#ebf5ff" }}>
-                Add Friend
-              </button>
-              <button style={{ backgroundColor: "#e2e5e9" }}>Remove</button>
-            </div>
-          </div>
-        </div>
+        {/* Friend Suggestions Container */}
+        <div id="friend-container-area">{friendSuggestionElements}</div>
       </div>
     </main>
   );
