@@ -1,97 +1,204 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import "@/app/globals.css";
 import "../../local.css";
-import { useEffect } from "react";
+import Cookies from "js-cookie";
+
+// 🔁 Helper to convert buffer to base64
+const getBase64FromBuffer = (bufferData) => {
+  if (!bufferData) return null;
+  const byteArray = bufferData.data
+    ? new Uint8Array(bufferData.data)
+    : new Uint8Array(Object.values(bufferData));
+  let binary = "";
+  byteArray.forEach((b) => (binary += String.fromCharCode(b)));
+  return btoa(binary);
+};
 
 const FriendRequest = () => {
+  const [nonFriends, setNonFriends] = useState([]);
+  const [incomingRequests, setIncomingRequests] = useState([]);
+
   useEffect(() => {
-    const friend_request_container = document.querySelector(
-      ".friend-request-container"
-    );
-    const friend_request_card = document.querySelector(".friend-request-card");
-    for (let i = 0; i < 10; i++) {
-      const friend_request_clone = friend_request_card.cloneNode(true);
-      friend_request_clone.style.display = "block";
-      friend_request_clone.querySelector(
-        ".friend-avatar"
-      ).style.backgroundImage = `url("https://i.pravatar.cc/100?u=${i}")`;
-      fetch("https://randomuser.me/api/")
-        .then((res) => res.json())
-        .then((data) => {
-          let person = data.results[0];
-          friend_request_clone.querySelector(
-            ".friend-name"
-          ).innerHTML = `${person.name.first} ${person.name.last}`;
+    const userId = Cookies.get("vibeUser");
+    if (!userId) return;
+
+    const fetchFriends = async () => {
+      try {
+        const response = await fetch("/api/getNonFriends", {
+          method: "POST",
+          body: JSON.stringify({ userId }),
+          headers: { "Content-Type": "application/json" },
         });
-      friend_request_clone.addEventListener("click", () => {
-        let image =
-          friend_request_clone.querySelector(".friend-avatar").style
-            .backgroundImage;
-        let name = friend_request_clone.querySelector(".friend-name").innerHTML;
-        document.querySelector(".profile-name").innerHTML =
-          name +
-          `<div class="friend-request-actions d-flex jcc mt-2">
-                    <button class="btn-confirm">Confirm</button>
-                    <button class="btn-delete">Delete</button>
-                  </div>`;
-        document.querySelector("#selectProfileImage").style.backgroundImage =
-          image;
-        document.querySelector("#selectProfileImage").style.borderRadius =
-          "50%";
-        document.querySelector("#selectProfileImage").style.border =
-          "2px solid black";
-      });
-      friend_request_container.appendChild(friend_request_clone);
-    }
+        if (!response.ok) throw new Error("Fetch failed");
+        const data = await response.json();
+        setNonFriends(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    const fetchIncomingRequests = async () => {
+      try {
+        const response = await fetch("/api/get-friend-request", {
+          method: "POST",
+          body: JSON.stringify({ userId }),
+          headers: { "Content-Type": "application/json" },
+        });
+
+        const data = await response.json();
+        setIncomingRequests(data.requests || []);
+      } catch (err) {
+        console.error("Error fetching incoming requests:", err);
+      }
+    };
+
+    fetchFriends();
+    fetchIncomingRequests();
   }, []);
+
   return (
     <main id="main-container" className="flex bg-white">
+      {/* 🌐 Sidebar */}
       <div className="box-left">
-        <div className="box-left-top aic">
+        <div className="box-left-top flex justify-between aic">
           <h3>
-            <b>Friend Request</b>
+            <b>Friends</b>
           </h3>
-          <section className="left-icon-container" id="left-icon-0"></section>
         </div>
         <div>
-          <section className="left-container">
-            <section className="left-icon-container" id="left-icon-1"></section>
-            <a href="/friend">
-              <h6>Friend</h6>
-            </a>
-          </section>
-          <div className="friend-request-container flex flex-column">
-            <div
-              className="friend-request-card flex"
-              style={{ display: "none" }}
-            >
-              <div className="friend-request-info">
-                <div
-                  className="friend-avatar"
-                  style={{
-                    backgroundImage:
-                      "url('https://i.pravatar.cc/100?u=randomSeed')",
-                  }}
-                ></div>
-                <p className="friend-name">Loading name</p>
-              </div>
-            </div>
-          </div>
+          {[
+            { href: "/", label: "Home" },
+            {
+              href: "/friend/friend-left/friendRequest",
+              label: "Friend Requests",
+            },
+            {
+              href: "/friend/friend-left/friendSuggestion",
+              label: "Suggestion",
+            },
+            { href: "/friend/friend-left/allFriend", label: "All Friends" },
+            { href: "/friend/friend-left/birthday", label: "Birthdays" },
+            { href: "/friend/friend-left/customList", label: "Custom List" },
+          ].map((link, i) => (
+            <section className="left-container" key={i}>
+              <section
+                className={`left-icon-container`}
+                id={`left-icon-${i + 1}`}
+              ></section>
+              <Link href={link.href}>
+                <h6>{link.label}</h6>
+              </Link>
+            </section>
+          ))}
         </div>
       </div>
 
+      {/* 🫂 Main Content */}
       <div
         className="box-main flex-column aic gap-2"
-        style={{ padding: "8vw" }}
+        style={{ padding: "2vw" }}
       >
-        <div id="selectProfileImage" className="adjustForImage"></div>
-        <h4
-          className="profile-name"
-          style={{ color: "#65686c", textAlign: "center" }}
-        >
-          Select people's names to preview their profile.
-        </h4>
+        <div className="flex justify-between aic mb-5">
+          <h4 style={{ fontSize: "1.5vw", marginBottom: "3vw" }}>
+            Friend Requests
+          </h4>
+        </div>
+
+        <div id="friend-requests-container" className="mb-10">
+          {incomingRequests.length === 0 ? (
+            <p>No friend requests.</p>
+          ) : (
+            incomingRequests.map((request, idx) => {
+              const user = request.user;
+              const base64Image = getBase64FromBuffer(user.userImage);
+              const bgImageUrl = base64Image
+                ? `url("data:image/png;base64,${base64Image}")`
+                : "";
+
+              return (
+                <div
+                  key={idx}
+                  className="friend-container"
+                  style={{ display: "block" }}
+                >
+                  <div
+                    className="friend-image adjustForImage"
+                    style={{ backgroundImage: bgImageUrl }}
+                  ></div>
+                  <div className="text">
+                    <h6 className="friend-name">{user.username}</h6>
+
+                    <button
+                      style={{ backgroundColor: "green", color: "white" }}
+                      onClick={async () => {
+                        try {
+                          const userId = Cookies.get("vibeUser");
+                          const friendId = user.id;
+
+                          const res = await fetch(
+                            "/api/friend-request-accept",
+                            {
+                              method: "POST",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({ userId, friendId }),
+                            }
+                          );
+
+                          const data = await res.json();
+                          if (!res.ok)
+                            throw new Error(data.error || "Accept failed");
+
+                          alert("Friend request accepted!");
+                          setIncomingRequests((prev) =>
+                            prev.filter((req) => req.user.id !== friendId)
+                          );
+                        } catch (error) {
+                          alert("Error accepting request: " + error.message);
+                        }
+                      }}
+                    >
+                      Accept
+                    </button>
+
+                    <button
+                      style={{ backgroundColor: "#e2e5e9" }}
+                      onClick={async () => {
+                        try {
+                          const userId = Cookies.get("vibeUser");
+                          const friendId = user.id;
+
+                          const res = await fetch(
+                            "/api/friend-request-reject",
+                            {
+                              method: "POST",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({ userId, friendId }),
+                            }
+                          );
+
+                          const data = await res.json();
+                          if (!res.ok)
+                            throw new Error(data.error || "Reject failed");
+
+                          alert("Friend request rejected!");
+                          setIncomingRequests((prev) =>
+                            prev.filter((req) => req.user.id !== friendId)
+                          );
+                        } catch (error) {
+                          alert("Error rejecting request: " + error.message);
+                        }
+                      }}
+                    >
+                      Reject
+                    </button>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
       </div>
     </main>
   );

@@ -4,19 +4,27 @@ import { NextResponse } from "next/server";
 export async function POST(req) {
   try {
     const { userId } = await req.json();
+    const userIdInt = parseInt(userId, 10);
 
-    // Convert userId to integer
-    const userIdInt = parseInt(userId, 10); // Convert to integer
-
-    // Check if the conversion is successful
     if (isNaN(userIdInt)) {
       return NextResponse.json({ error: "Invalid userId" }, { status: 400 });
     }
 
-    // Fetch friend relations for the given userId
-    const friendRelations = await prisma.friendList.findMany({
-      where: { userId: userIdInt }, // Use the integer version of userId
+    // Get all accepted friends where user is either the sender or receiver
+    const acceptedFriends = await prisma.friendList.findMany({
+      where: {
+        status: "accepted",
+        OR: [{ userId: userIdInt }, { friendId: userIdInt }],
+      },
       include: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+            userImage: true,
+            story: true,
+          },
+        },
         friend: {
           select: {
             id: true,
@@ -28,7 +36,10 @@ export async function POST(req) {
       },
     });
 
-    const friends = friendRelations.map((relation) => relation.friend);
+    // Normalize the friend (get the person who is NOT the user)
+    const friends = acceptedFriends.map((relation) => {
+      return relation.userId === userIdInt ? relation.friend : relation.user;
+    });
 
     return NextResponse.json(friends);
   } catch (error) {

@@ -282,6 +282,50 @@ export default function Home() {
       const postClone = postTemplate.cloneNode(true);
       postClone.style.display = "block";
 
+      postClone.querySelector("#react").addEventListener("dblclick", () => {
+        const reactionBox = postClone.querySelector("#reaction-container-1");
+
+        // Toggle display between 'none' and 'flex'
+        if (reactionBox.style.display === "flex") {
+          reactionBox.style.display = "none";
+        } else {
+          reactionBox.style.display = "flex";
+        }
+      });
+
+      postClone.querySelectorAll(".reactor").forEach((reactor) => {
+        let liked = false; // flag to block multiple likes per session
+
+        reactor.addEventListener("click", async () => {
+          if (liked) return; // no spamming
+
+          try {
+            const res = await fetch("/api/postLikeIncrease", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ postid: post.postid }),
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+              liked = true;
+              console.log("🔥 Post liked!", data);
+              // Disable all like buttons in this postClone
+              postClone
+                .querySelectorAll(".reactor")
+                .forEach((btn) => (btn.disabled = true));
+            } else {
+              console.warn("😵 Server rejected like:", data.error);
+            }
+          } catch (err) {
+            console.error("💀 Error hitting like API:", err);
+          }
+        });
+      });
+
       const res = await fetch("/api/getAuthor/getAuthorName", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -735,40 +779,41 @@ export default function Home() {
               <h3 className="post-title-local">Post title or description</h3>
               <div className="post-image"></div>
               <hr />
-              <div className="flex aic justify-content-between">
-                <section id="reaction-container">
-                  <div className="react-1"></div>
-                  <div className="react-2"></div>
-                  <div className="react-3"></div>
-                  <p className="react-count">100</p>
-                </section>
-              </div>
-              <hr />
               <div
                 className="flex aic"
                 style={{ justifyContent: "space-between", gap: "3vw" }}
               >
                 <section className="post-bottom-icon-container">
                   <div
-                    className="post-bottom-icon adjustForImage"
-                    id="react"
-                  ></div>
-                  <div></div>
-                  <p>Like</p>
-                </section>
-                <section className="post-bottom-icon-container">
-                  <div
-                    className="post-bottom-icon adjustForImage"
-                    id="comment"
-                  ></div>
-                  <p>Comment</p>
-                </section>
-                <section className="post-bottom-icon-container">
-                  <div
-                    className="post-bottom-icon adjustForImage"
-                    id="share"
-                  ></div>
-                  <p>Share</p>
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5vw",
+                    }}
+                  >
+                    <div
+                      className="post-bottom-icon adjustForImage"
+                      id="react"
+                    ></div>
+                    <p>Like</p>
+                    <section id="reaction-container-1">
+                      <div className="react-4 reactor"></div>
+                      <div className="react-5 reactor"></div>
+                      <div className="react-6 reactor"></div>
+                      <div className="react-7 reactor"></div>
+                      <div className="react-8 reactor"></div>
+                      <div className="react-9 reactor"></div>
+                      <div className="react-10 reactor"></div>
+                    </section>
+                  </div>
+                  <div className="flex aic justify-content-between">
+                    <section id="reaction-container">
+                      <div className="react-1"></div>
+                      <div className="react-2"></div>
+                      <div className="react-3"></div>
+                      <p className="react-count">100</p>
+                    </section>
+                  </div>
                 </section>
               </div>
             </div>
@@ -810,18 +855,38 @@ export default function Home() {
         <div className="box" id="box-right">
           <h6>Sponsored</h6>
           <section className="flex aic">
-            <div
-              className="adjustForImage sponsor-image-container"
-              id="sponsor-image-1"
-            ></div>
-            <h6>PlayerUnknown's BattleGrounds</h6>
+            <a
+              href="https://www.pubg.com/en/main"
+              target="_blank"
+              style={{
+                textDecoration: "none",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <div
+                className="adjustForImage sponsor-image-container"
+                id="sponsor-image-1"
+              ></div>
+              <h6>PlayerUnknown's BattleGrounds</h6>
+            </a>
           </section>
           <section className="flex aic">
-            <div
-              className="adjustForImage sponsor-image-container"
-              id="sponsor-image-2"
-            ></div>
-            <h6>Mobile Legends: Bang Bang</h6>
+            <a
+              href="https://www.mobilelegends.com/"
+              target="_blank"
+              style={{
+                textDecoration: "none",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <div
+                className="adjustForImage sponsor-image-container"
+                id="sponsor-image-2"
+              ></div>
+              <h6>Mobile Legends: Bang Bang</h6>
+            </a>
           </section>
           <section>
             <div className="contact-flex">

@@ -30,6 +30,7 @@ model FriendList {
   id        Int           @id @default(autoincrement())
   userId    Int
   friendId  Int
+  status    String        @default("pending")
 
   user      VibeUserTable @relation("UserToFriends", fields: [userId], references: [id])
   friend    VibeUserTable @relation("FriendToUser", fields: [friendId], references: [id])

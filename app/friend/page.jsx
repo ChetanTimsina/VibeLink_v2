@@ -19,11 +19,13 @@ const getBase64FromBuffer = (bufferData) => {
 
 const Friend = () => {
   const [nonFriends, setNonFriends] = useState([]);
+  const [incomingRequests, setIncomingRequests] = useState([]);
 
   useEffect(() => {
+    const userId = Cookies.get("vibeUser");
+    if (!userId) return;
+
     const fetchFriends = async () => {
-      const userId = Cookies.get("vibeUser");
-      if (!userId) return;
       try {
         const response = await fetch("/api/getNonFriends", {
           method: "POST",
@@ -37,40 +39,88 @@ const Friend = () => {
         console.error(err);
       }
     };
+
+    const fetchIncomingRequests = async () => {
+      try {
+        const userId = Cookies.get("vibeUser");
+        const response = await fetch("/api/get-friend-request", {
+          method: "POST",
+          body: JSON.stringify({ userId }),
+          headers: { "Content-Type": "application/json" },
+        });
+
+        const data = await response.json();
+
+        setIncomingRequests(data.requests || []);
+      } catch (err) {
+        console.error("Error fetching incoming requests:", err);
+      }
+    };
+
     fetchFriends();
+    fetchIncomingRequests();
   }, []);
+
+  const [removedIndexes, setRemovedIndexes] = useState([]);
+
+  const renderSuggestionCard = (person, idx) => {
+    if (removedIndexes.includes(idx)) return null; // skip rendering removed ones
+
+    const base64Image = getBase64FromBuffer(person.userImage);
+    const bgImageUrl = base64Image
+      ? `url("data:image/png;base64,${base64Image}")`
+      : "";
+
+    return (
+      <div key={idx} className="friend-container" style={{ display: "block" }}>
+        <div
+          className="friend-image adjustForImage"
+          style={{ backgroundImage: bgImageUrl }}
+        ></div>
+        <div className="text">
+          <h6 className="friend-name">{person.username}</h6>
+          <button
+            style={{ backgroundColor: "blue", color: "white" }}
+            onClick={async () => {
+              const friendId = person.id;
+              const userId = Cookies.get("vibeUser");
+              const res = await fetch("/api/send-friend-request", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ userId, friendId }),
+              });
+
+              const data = await res.json();
+              console.log(data);
+              if (res.ok) {
+                alert("Friend Request Sent");
+              }
+              if (!res.ok)
+                throw new Error(data.error || "Something went wrong");
+            }}
+          >
+            Add Friend
+          </button>
+          <button
+            style={{ backgroundColor: "#e2e5e9" }}
+            onClick={() => {
+              setRemovedIndexes((prev) => [...prev, idx]);
+            }}
+          >
+            Remove
+          </button>
+        </div>
+      </div>
+    );
+  };
 
   const friendSuggestionElements =
     nonFriends.length === 0 ? (
       <p>No friend suggestions at the moment.</p>
     ) : (
-      nonFriends.map((person, idx) => {
-        const base64Image = getBase64FromBuffer(person.userImage);
-        const bgImageUrl = base64Image
-          ? `url("data:image/png;base64,${base64Image}")`
-          : "";
-
-        return (
-          <div
-            key={idx}
-            className="friend-container"
-            style={{ display: "block" }}
-          >
-            <div
-              className="friend-image adjustForImage"
-              style={{ backgroundImage: bgImageUrl }}
-            ></div>
-
-            <div className="text">
-              <h6 className="friend-name">{person.username}</h6>
-              <button style={{ backgroundColor: "blue", color: "white" }}>
-                Add Friend
-              </button>
-              <button style={{ backgroundColor: "#e2e5e9" }}>Remove</button>
-            </div>
-          </div>
-        );
-      })
+      nonFriends.map(renderSuggestionCard)
     );
 
   return (
@@ -123,16 +173,114 @@ const Friend = () => {
       </div>
 
       <div className="box-main p-5">
-        {/* Friend Suggestions Header */}
-        <div
-          className="flex justify-between aic"
-          style={{ marginBottom: "2vw" }}
-        >
+        {/* 🫂 Friend Requests Header */}
+        <div className="flex justify-between aic mb-5">
+          <h4 style={{ fontSize: "1.5vw" }}>Friend Requests</h4>
+        </div>
+        <div id="friend-requests-container" className="mb-10">
+          {incomingRequests.length === 0 ? (
+            <p>No friend requests.</p>
+          ) : (
+            incomingRequests.map((request, idx) => {
+              const user = request.user;
+              const base64Image = getBase64FromBuffer(user.userImage);
+              const bgImageUrl = base64Image
+                ? `url("data:image/png;base64,${base64Image}")`
+                : "";
+
+              return (
+                <div
+                  key={idx}
+                  className="friend-container"
+                  style={{ display: "block" }}
+                >
+                  <div
+                    className="friend-image adjustForImage"
+                    style={{ backgroundImage: bgImageUrl }}
+                  ></div>
+                  <div className="text">
+                    <h6 className="friend-name">{user.username}</h6>
+                    <button
+                      style={{ backgroundColor: "green", color: "white" }}
+                      onClick={async () => {
+                        try {
+                          const userId = Cookies.get("vibeUser");
+                          const friendId = user.id;
+
+                          const res = await fetch(
+                            "/api/friend-request-accept",
+                            {
+                              method: "POST",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({ userId, friendId }),
+                            }
+                          );
+
+                          const data = await res.json();
+                          if (!res.ok)
+                            throw new Error(data.error || "Accept failed");
+
+                          alert("Friend request accepted!");
+                          setIncomingRequests((prev) =>
+                            prev.filter((req) => req.user.id !== friendId)
+                          );
+                        } catch (error) {
+                          alert(
+                            "Error accepting friend request: " + error.message
+                          );
+                        }
+                      }}
+                    >
+                      Accept
+                    </button>
+                    <button
+                      style={{ backgroundColor: "#e2e5e9" }}
+                      onClick={async () => {
+                        try {
+                          const userId = Cookies.get("vibeUser");
+                          const friendId = user.id;
+
+                          const res = await fetch(
+                            "/api/friend-request-reject",
+                            {
+                              method: "POST",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({ userId, friendId }),
+                            }
+                          );
+
+                          const data = await res.json();
+                          if (!res.ok)
+                            throw new Error(data.error || "Reject failed");
+
+                          alert("Friend request rejected!");
+                          setIncomingRequests((prev) =>
+                            prev.filter((req) => req.user.id !== friendId)
+                          );
+                        } catch (error) {
+                          alert(
+                            "Error rejecting friend request: " + error.message
+                          );
+                        }
+                      }}
+                    >
+                      Reject
+                    </button>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+
+        {/* 🧠 Friend Suggestions Header */}
+        <div className="flex justify-between aic mb-5">
+          <br />
+          <br />
+          <br />
           <h4 style={{ fontSize: "1.5vw" }}>Friend Suggestions</h4>
           <h6 style={{ color: "blue", fontSize: "1.5vw" }}>See all</h6>
         </div>
-
-        {/* Friend Suggestions Container */}
         <div id="friend-container-area">{friendSuggestionElements}</div>
       </div>
     </main>

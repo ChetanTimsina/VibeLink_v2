@@ -38,7 +38,7 @@ const Register = () => {
             expires: 365 * 100,
             path: "/",
           });
-          router.push("/"); // 🛫 Redirect to homepage
+          router.push("/InitialPage"); // 🛫 Redirect to homepage
         }, 1000);
       } else if (registerData.error === "User already exists 🚨") {
         // 🧠 Try login

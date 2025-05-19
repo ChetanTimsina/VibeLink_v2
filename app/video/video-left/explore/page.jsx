@@ -1,11 +1,10 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import "../../local.css";
-import { useEffect } from "react";
 import "@/app/globals.css";
 import "@/app/local.css";
 
-const Explore = () => {
+const Video = () => {
   useEffect(() => {
     const options = {
       method: "GET",
@@ -27,61 +26,52 @@ const Explore = () => {
             card.classList.add("card", "mb-4");
             card.style.maxWidth = "720px";
 
-            fetch(
-              `https://api.themoviedb.org/3/movie/${movie.id}/videos`,
-              options
-            )
-              .then((res) => res.json())
-              .then((videoData) => {
-                const trailer = videoData.results.find(
-                  (v) => v.type === "Trailer" && v.site === "YouTube"
-                );
-
-                card.innerHTML = `
-                  <div class="card-body">
-                    <section class="post-top" style="width: 100%">
-                      <div class="flex aic gap" style="flex-direction: row">
-                        <div id="post-icon" class="adjustForImage"></div>
-                        <div class="post-title d-flex flex-column">
-                          <p class="card-title"><b>${movie.title}</b></p>
-                        </div>
-                      </div>
-                      <div class="flex gap" style="flex-direction: row">
-                        <section class="more-icon adjustForImage"></section>
-                        <section class="wrong-icon adjustForImage"></section>
-                      </div>
-                    </section>
-                    <p class="card-text">${
-                      movie.overview ||
-                      "No overview 😶 Levon Cade left behind a decorated military career in the black ops to live a simple life working construction. But when his boss's daughter, who is like family to him, is taken by human traffickers, his search to bring her home uncovers a world of corruption far greater than he ever could have imagined."
-                    }</p>
-                    ${
-                      trailer
-                        ? `<div class="ratio ratio-16x9">
-                            <iframe src="https://www.youtube.com/embed/${trailer.key}" 
-                              title="${movie.title} trailer" allowfullscreen></iframe>
-                          </div>`
-                        : `<p>No trailer available 🫠</p>`
-                    }
+            card.innerHTML = `
+              <div class="card-body">
+                <section class="post-top" style="width: 100%">
+                  <div class="flex aic gap" style="flex-direction: row">
+                    <div id="post-icon" class="adjustForImage"></div>
+                    <div class="post-title d-flex flex-column">
+                      <p class="card-title"><b>${movie.title}</b></p>
+                    </div>
+                  </div>
+                  <div class="flex gap" style="flex-direction: row">
+                    <section class="more-icon adjustForImage"></section>
+                    <section class="wrong-icon adjustForImage" style="cursor: pointer;"></section>
+                  </div>
+                </section>
+                <p class="card-text">
+                  ${
+                    movie.overview ||
+                    "No overview 😶 Levon Cade left behind a decorated military career in the black ops to live a simple life working construction. But when his boss's daughter, who is like family to him, is taken by human traffickers, his search to bring her home uncovers a world of corruption far greater than he ever could have imagined."
+                  }
+                </p>
+                <div class="ratio ratio-16x9">
+                  <iframe 
+                    src="https://vidsrc.me/embed/movie/${movie.id}" 
+                    title="${movie.title}" 
+                    allowfullscreen 
+                    width="100%" 
+                    height="400" 
+                    frameborder="0">
+                  </iframe>
+                </div>
                 <hr />
-                <div class="flex jcc aic gap" style="flex-direction: row">
+                <div class="flex aic gap" style="flex-direction: row">
                   <section class="post-bottom-icon-container">
+                    <div class="flex aic gap"  style="flex-direction: row">
                     <div class="post-bottom-icon adjustForImage" id="react"></div>
                     <p>Like</p>
-                  </section>
-                  <section class="post-bottom-icon-container">
-                    <div class="post-bottom-icon adjustForImage" id="comment"></div>
-                    <p>Comment</p>
-                  </section>
-                  <section class="post-bottom-icon-container">
-                    <div class="post-bottom-icon adjustForImage" id="share"></div>
-                    <p>Share</p>
+                    </div>
                   </section>
                 </div>
-                  </div>
-                `;
-                container.appendChild(card);
-              });
+              </div>
+            `;
+            container.appendChild(card);
+            const wrongIcon = card.querySelector(".wrong-icon");
+            wrongIcon.addEventListener("click", () => {
+              card.style.display = "none";
+            });
           });
         })
         .catch((err) => {
@@ -90,86 +80,58 @@ const Explore = () => {
             "<p>Failed to load content. TMDB said nah 💔</p>";
         });
     };
+
     createMovieSection(
-      "https://api.themoviedb.org/3/trending/all/day",
-      ".box-main-1"
+      "https://api.themoviedb.org/3/trending/movie/day",
+      ".box-main"
+    );
+    createMovieSection(
+      "https://api.themoviedb.org/3/movie/top_rated",
+      ".box-main"
     );
   }, []);
+
   return (
     <main id="main-container" className="flex bg-white">
+      {/* Left Sidebar */}
       <div className="box-left">
         <div
           className="box-left-top flex justify-content-between aic"
           style={{ flexDirection: "row" }}
         >
           <h3>
-            <b>Explore</b>
+            <b>Video</b>
           </h3>
           <section className="left-icon-container" id="left-video-0"></section>
         </div>
         <div id="selectable">
-          <section className="ui-widget-content">
-            <section
-              className="left-icon-container"
-              id="left-video-1"
-            ></section>
-            <a href="/">
-              <h6>Home</h6>
-            </a>
-          </section>
-          <section className="ui-widget-content">
-            <section
-              className="left-icon-container"
-              id="left-video-2"
-            ></section>
-            <a href="/video/video-left/live">
-              <h6>Live</h6>
-            </a>
-          </section>
-          <section className="ui-widget-content">
-            <section
-              className="left-icon-container"
-              id="left-video-3"
-            ></section>
-            <a href="/video/video-left/reel">
-              <h6>Reels</h6>
-            </a>
-          </section>
-          <section className="ui-widget-content">
-            <section
-              className="left-icon-container"
-              id="left-video-4"
-            ></section>
-            <a href="/video/video-left/show">
-              <h6>Shows</h6>
-            </a>
-          </section>
-          <section className="ui-widget-content">
-            <section
-              className="left-icon-container"
-              id="left-video-5"
-            ></section>
-            <a href="/video/video-left/explore">
-              <h6>Explore</h6>
-            </a>
-          </section>
-          <section className="ui-widget-content">
-            <section
-              className="left-icon-container"
-              id="left-video-6"
-            ></section>
-            <a href="/video/video-left/saveVideo">
-              <h6>Save Videos</h6>
-            </a>
-          </section>
+          {[
+            ["Home", "/"],
+            ["Live", "/video/video-left/live"],
+            ["Reels", "/video/video-left/reel"],
+            ["Shows", "/video/video-left/show"],
+            ["Explore", "/video/video-left/explore"],
+            ["Save Videos", "/video/video-left/saveVideo"],
+          ].map(([label, href], i) => (
+            <section className="ui-widget-content" key={i}>
+              <section
+                className="left-icon-container"
+                id={`left-video-${i + 1}`}
+              ></section>
+              <a href={href}>
+                <h6>{label}</h6>
+              </a>
+            </section>
+          ))}
         </div>
       </div>
 
-      <div id="box-main" className="box-main-1 flex flex-column aic p-5">
-        {/* <!-- Video Cards will appear here --> */}
+      {/* Main Content */}
+      <div className="box-main flex flex-column aic p-5">
+        {/* Cards will auto-append here by JS */}
       </div>
     </main>
   );
 };
 
-export default Explore;
+export default Video;
