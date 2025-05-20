@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-import { toastBottomRight } from "@/app/lib/toastify";
 
 const prisma = new PrismaClient();
 
@@ -9,7 +8,7 @@ export async function GET(request) {
     const users = await prisma.vibeUserTable.findMany();
     return new Response(JSON.stringify(users));
   } catch (error) {
-    toastBottomRight("Failed to fetch users 💀:", error);
+    console.error("Failed to fetch users 💀:", error);
     return new Response("Failed to fetch users", { status: 500 });
   }
 }
@@ -66,7 +65,7 @@ export async function POST(request) {
       { status: 201 }
     );
   } catch (error) {
-    toastBottomRight("User creation/login failed 🧨:", error);
+    console.error("User creation/login failed 🧨:", error);
     return new Response("Internal Server Error", { status: 500 });
   }
 }

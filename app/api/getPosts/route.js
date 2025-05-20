@@ -1,5 +1,5 @@
+// app/api/getPosts/route.js or route.ts
 import { PrismaClient } from "@prisma/client";
-import { toastBottomRight } from "@/app/lib/toastify";
 
 const prisma = new PrismaClient();
 
@@ -20,7 +20,7 @@ export async function GET(req) {
 
     return Response.json({ posts }, { status: 200 });
   } catch (error) {
-    toastBottomRight("Error fetching posts:", error);
+    console.error("Error fetching posts:", error);
     return Response.json({ error: "Failed to fetch posts" }, { status: 500 });
   }
 }

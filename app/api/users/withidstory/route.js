@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
-import { toastBottomRight } from "@/app/lib/toastify";
 
 export async function POST(req) {
   try {
@@ -38,7 +37,7 @@ export async function POST(req) {
       { status: 200 }
     );
   } catch (error) {
-    toastBottomRight("Error updating story image:", error);
+    console.error("Error updating story image:", error);
     return new Response(
       JSON.stringify({ error: "Failed to update story image" }),
       { status: 500 }

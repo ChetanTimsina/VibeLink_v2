@@ -1,6 +1,5 @@
 import { prisma } from "../../lib/prisma";
 import { NextResponse } from "next/server";
-import { toastBottomRight } from "@/app/lib/toastify";
 
 export async function POST(req) {
   try {
@@ -44,7 +43,7 @@ export async function POST(req) {
 
     return NextResponse.json(friends);
   } catch (error) {
-    toastBottomRight("Error fetching friends:", error);
+    console.error("Error fetching friends:", error);
     return NextResponse.json(
       { error: "Failed to fetch friends" },
       { status: 500 }

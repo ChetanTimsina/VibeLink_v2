@@ -7,10 +7,11 @@ import "../localsecond.css";
 import "../local.css";
 import { toast } from "react-hot-toast";
 import { toastBottomRight } from "@/app/lib/toastify";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const Page = () => {
   const [user, setUser] = useState(null);
-  const [story, setStory] = useState(null);
   const [friends, setFriends] = useState([]);
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -19,37 +20,43 @@ const Page = () => {
   const [posts, setPosts] = useState([]);
   const postTemplateRef = useRef(null);
   const postContainerRef = useRef(null);
+  const router = useRouter();
+
+  const searchParams = useSearchParams();
+  const userId = searchParams.get("userId");
+  const LoggedInId = Cookies.get("vibeUser");
 
   useEffect(() => {
     postTemplateRef.current = document.querySelector(".post-container");
     postContainerRef.current = document.querySelector("#post-container-area");
   }, []);
-  async function createPosts() {
-    const allPosts = []; // Accumulate posts here
 
-    for (const friend of friends) {
+  useEffect(() => {
+    const fetchPosts = async () => {
+      if (!userId) {
+        console.warn("No user ID found in cookies.");
+        return;
+      }
+
       try {
-        const res = await fetch(`/api/getimage?friendid=${friend.id}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!res.ok) throw new Error("Failed to fetch images");
-
+        const res = await fetch(`/api/getPosts?authorId=${userId}`);
         const data = await res.json();
 
-        // Add fetched posts to accumulator
-        allPosts.push(...data);
+        if (res.ok) {
+          setPosts(data.posts);
+        } else {
+          console.error("API error:", data.error);
+        }
       } catch (err) {
-        toastBottomRight("Image fetch error 💥:", err);
+        console.error("Fetch error:", err);
       }
-    }
+    };
 
-    setPosts(allPosts);
-    console.log("✅ Posts state updated:", allPosts);
+    fetchPosts();
+  }, []);
 
+  console.log(posts);
+  async function createPosts() {
     // Render posts after state update
     const postTemplate = postTemplateRef.current;
     const postContainer = postContainerRef.current;
@@ -58,7 +65,7 @@ const Page = () => {
       postContainer.innerHTML = "";
     }
 
-    for (const post of allPosts) {
+    for (const post of posts) {
       const postClone = postTemplate.cloneNode(true);
       postClone.style.display = "block";
 
@@ -123,7 +130,9 @@ const Page = () => {
 
       if (postImage) {
         if (post.postImage) {
-          postImage.style.backgroundImage = `url("data:image/png;base64,${post.postImage}")`;
+          postImage.style.backgroundImage = `url("data:image/png;base64,${getBase64FromBuffer(
+            post.postImage
+          )}")`;
         } else {
           postImage.style.backgroundImage = `url("https://via.placeholder.com/700x600?text=No+Image")`;
         }
@@ -163,7 +172,7 @@ const Page = () => {
         }
       }
       const post_created_at = postClone.querySelector(".post-created-at");
-      const dateObj = new Date(post.postCreatedAt);
+      const dateObj = new Date(post.createdAt);
       const formattedDate = `${String(dateObj.getDate()).padStart(
         2,
         "0"
@@ -189,7 +198,7 @@ const Page = () => {
 
   useEffect(() => {
     createPosts();
-  }, [friends]);
+  }, [posts]);
 
   // Convert Prisma raw buffer/object to base64 string
   const getBase64FromBuffer = (bufferData) => {
@@ -214,7 +223,6 @@ const Page = () => {
     ? `data:image/png;base64,${getBase64FromBuffer(user.story)}`
     : "/Images/profile.svg";
   // Fetch user data
-  const userId = Cookies.get("vibeUser");
   if (!userId) return null;
 
   const fetchUsername = async () => {
@@ -243,7 +251,6 @@ const Page = () => {
   // Fetch friends
   useEffect(() => {
     const fetchFriends = async () => {
-      const userId = Cookies.get("vibeUser");
       if (!userId) {
         toastBottomRight("No user found in cookies");
         return;
@@ -284,10 +291,17 @@ const Page = () => {
     document.getElementById("fileInput").value = "";
   };
 
+  const handlePostcall = (e) => {
+    e.preventDefault();
+    if (userId !== LoggedInId) {
+      toast.error("Cannot Change Profile of Other User");
+      router.push("/");
+    } else {
+      handlePost(e);
+    }
+  };
   const handlePost = async (e) => {
     e.preventDefault();
-
-    const userId = Cookies.get("vibeUser");
 
     const formData = new FormData();
     formData.append("id", userId);
@@ -328,10 +342,18 @@ const Page = () => {
     document.getElementById("SfileInput").value = "";
   };
 
+  const ShandlePostcall = (e) => {
+    e.preventDefault();
+    if (userId !== LoggedInId) {
+      toast.error("Cannot Change Story of Other User");
+      router.push("/");
+    } else {
+      ShandlePost(e);
+    }
+  };
+
   const ShandlePost = async (e) => {
     e.preventDefault();
-
-    const userId = Cookies.get("vibeUser");
 
     const formData = new FormData();
     formData.append("id", userId);
@@ -383,7 +405,7 @@ const Page = () => {
               <br />
               <hr />
               <br />
-              <form onSubmit={ShandlePost}>
+              <form onSubmit={ShandlePostcall}>
                 <div className="file-upload" style={{ position: "relative" }}>
                   <label
                     htmlFor="SfileInput"
@@ -494,7 +516,7 @@ const Page = () => {
               <br />
               <hr />
               <br />
-              <form onSubmit={handlePost}>
+              <form onSubmit={handlePostcall}>
                 <div className="file-upload" style={{ position: "relative" }}>
                   <label
                     htmlFor="fileInput"

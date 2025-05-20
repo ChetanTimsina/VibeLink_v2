@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
-import { toastBottomRight } from "@/app/lib/toastify";
 
 export async function POST(req) {
   const formData = await req.formData();
@@ -29,7 +28,7 @@ export async function POST(req) {
 
     return Response.json({ message: "Post uploaded", post: newPost });
   } catch (error) {
-    toastBottomRight("Error saving post:", error);
+    console.error("Error saving post:", error);
     return Response.json({ error: "Failed to save post" }, { status: 500 });
   }
 }

@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../lib/prisma";
-import { toastBottomRight } from "@/app/lib/toastify";
 
 export async function POST(req) {
   try {
@@ -39,7 +38,7 @@ export async function POST(req) {
       { status: 200 }
     );
   } catch (err) {
-    toastBottomRight("[getPostAuthor] Error:", err);
+    console.error("[getPostAuthor] Error:", err);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

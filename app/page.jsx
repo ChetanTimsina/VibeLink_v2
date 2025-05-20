@@ -429,7 +429,7 @@ export default function Home() {
                 outline: "1px solid black",
               }}
               onClick={() => {
-                router.push("/profile");
+                router.push(`/profile?userId=${user?.id}`);
               }}
             ></div>
             <h6>{user?.username}</h6>
@@ -722,7 +722,7 @@ export default function Home() {
                   src="https://static.xx.fbcdn.net/rsrc.php/v4/yd/r/Y4mYLVOhTwq.png"
                   alt=""
                 />
-                <h6>Feeling/Linkctivity</h6>
+                <h6>Feeling/Activity</h6>
               </button>
             </div>
           </div>

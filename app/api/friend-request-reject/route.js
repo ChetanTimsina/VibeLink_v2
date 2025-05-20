@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
+
 export async function POST(request) {
   try {
     const { userId, friendId } = await request.json();
@@ -20,19 +21,16 @@ export async function POST(request) {
       );
     }
 
-    // Update the friend request status to "accepted"
-    const updated = await prisma.friendList.updateMany({
+    // 💣 DELETE the friend request row
+    const deleted = await prisma.friendList.deleteMany({
       where: {
         userId: numericFriendId, // requester
-        friendId: numericUserId, // receiver (acceptor)
+        friendId: numericUserId, // receiver (rejector)
         status: "pending",
-      },
-      data: {
-        status: "accepted",
       },
     });
 
-    if (updated.count === 0) {
+    if (deleted.count === 0) {
       return new Response(
         JSON.stringify({ error: "No pending friend request found" }),
         { status: 404 }
@@ -40,13 +38,13 @@ export async function POST(request) {
     }
 
     return new Response(
-      JSON.stringify({ message: "Friend request accepted" }),
+      JSON.stringify({ message: "Friend request rejected and deleted" }),
       {
         status: 200,
       }
     );
   } catch (error) {
-    console.error("[friend-request-accept]", error);
+    console.error("[friend-request-reject]", error);
     return new Response(JSON.stringify({ error: "Internal Server Error" }), {
       status: 500,
     });

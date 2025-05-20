@@ -6,6 +6,7 @@ import "./local.css";
 import Cookies from "js-cookie";
 import { toast } from "react-hot-toast";
 import { toastBottomRight } from "@/app/lib/toastify";
+import { useRouter } from "next/navigation";
 
 const getBase64FromBuffer = (bufferData) => {
   if (!bufferData) return null;
@@ -22,6 +23,8 @@ const getBase64FromBuffer = (bufferData) => {
 const Friend = () => {
   const [nonFriends, setNonFriends] = useState([]);
   const [incomingRequests, setIncomingRequests] = useState([]);
+
+  const router = useRouter();
 
   useEffect(() => {
     const userId = Cookies.get("vibeUser");
@@ -78,6 +81,9 @@ const Friend = () => {
         <div
           className="friend-image adjustForImage"
           style={{ backgroundImage: bgImageUrl }}
+          onClick={() => {
+            router.push(`/profile?userId=${person.id}`);
+          }}
         ></div>
         <div className="text">
           <h6 className="friend-name">{person.username}</h6>
@@ -199,6 +205,9 @@ const Friend = () => {
                   <div
                     className="friend-image adjustForImage"
                     style={{ backgroundImage: bgImageUrl }}
+                    onClick={() => {
+                      router.push(`/profile?userId=${user?.id}`);
+                    }}
                   ></div>
                   <div className="text">
                     <h6 className="friend-name">{user.username}</h6>
