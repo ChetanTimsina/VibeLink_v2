@@ -4,6 +4,8 @@ import "@/app/globals.css";
 import "../../local.css";
 import Cookies from "js-cookie";
 import Link from "next/link";
+import { toast } from "react-hot-toast";
+import { toastBottomRight } from "@/app/lib/toastify";
 
 // Convert binary buffer to base64 for image
 const getBase64FromBuffer = (bufferData) => {
@@ -39,10 +41,10 @@ const FriendSuggestion = () => {
         if (response.ok) {
           setNonFriends(data);
         } else {
-          console.error("Failed to fetch suggestions");
+          toastBottomRight("Failed to fetch suggestions");
         }
       } catch (err) {
-        console.error("Error fetching non-friends:", err);
+        toastBottomRight("Error fetching non-friends:", err);
       }
     };
 
@@ -81,9 +83,9 @@ const FriendSuggestion = () => {
 
               const data = await res.json();
               if (res.ok) {
-                alert("Friend Request Sent ✅");
+                toast.success("✨Friend Request Sent ✅");
               } else {
-                alert(data.error || "Something went wrong ❌");
+                toast.error(data.error || "");
               }
             }}
           >

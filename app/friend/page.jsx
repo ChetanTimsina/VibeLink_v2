@@ -4,6 +4,8 @@ import Link from "next/link";
 import "@/app/globals.css";
 import "./local.css";
 import Cookies from "js-cookie";
+import { toast } from "react-hot-toast";
+import { toastBottomRight } from "@/app/lib/toastify";
 
 const getBase64FromBuffer = (bufferData) => {
   if (!bufferData) return null;
@@ -36,7 +38,7 @@ const Friend = () => {
         const data = await response.json();
         setNonFriends(data);
       } catch (err) {
-        console.error(err);
+        toastBottomRight(err);
       }
     };
 
@@ -53,7 +55,7 @@ const Friend = () => {
 
         setIncomingRequests(data.requests || []);
       } catch (err) {
-        console.error("Error fetching incoming requests:", err);
+        toastBottomRight("Error fetching incoming requests:", err);
       }
     };
 
@@ -95,7 +97,7 @@ const Friend = () => {
               const data = await res.json();
               console.log(data);
               if (res.ok) {
-                alert("Friend Request Sent");
+                toast.success("✨Friend Request Sent");
               }
               if (!res.ok)
                 throw new Error(data.error || "Something went wrong");
@@ -220,13 +222,13 @@ const Friend = () => {
                           if (!res.ok)
                             throw new Error(data.error || "Accept failed");
 
-                          alert("Friend request accepted!");
+                          toast.success("✨Friend request accepted!");
                           setIncomingRequests((prev) =>
                             prev.filter((req) => req.user.id !== friendId)
                           );
                         } catch (error) {
-                          alert(
-                            "Error accepting friend request: " + error.message
+                          toastBottomRight(
+                            "✨Error accepting friend request: " + error.message
                           );
                         }
                       }}
@@ -253,12 +255,12 @@ const Friend = () => {
                           if (!res.ok)
                             throw new Error(data.error || "Reject failed");
 
-                          alert("Friend request rejected!");
+                          toast.success("✨Friend request rejected!");
                           setIncomingRequests((prev) =>
                             prev.filter((req) => req.user.id !== friendId)
                           );
                         } catch (error) {
-                          alert(
+                          toastBottomRight(
                             "Error rejecting friend request: " + error.message
                           );
                         }

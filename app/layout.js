@@ -1,5 +1,6 @@
 import "./globals.css";
 import Header from "@/components/Header/page";
+import { Toaster } from "react-hot-toast";
 
 export const metadata = {
   title: "VibeLink",
@@ -12,6 +13,7 @@ export default function RootLayout({ children }) {
       <body>
         <Header />
         {children}
+        <Toaster position="top-right" reverseOrder={false} />
       </body>
     </html>
   );

@@ -4,6 +4,8 @@ import Link from "next/link";
 import "@/app/globals.css";
 import "../../local.css";
 import Cookies from "js-cookie";
+import { toast } from "react-hot-toast";
+import { toastBottomRight } from "@/app/lib/toastify";
 
 // 🔁 Helper to convert buffer to base64
 const getBase64FromBuffer = (bufferData) => {
@@ -35,7 +37,7 @@ const FriendRequest = () => {
         const data = await response.json();
         setNonFriends(data);
       } catch (err) {
-        console.error(err);
+        toastBottomRight(err);
       }
     };
 
@@ -50,7 +52,7 @@ const FriendRequest = () => {
         const data = await response.json();
         setIncomingRequests(data.requests || []);
       } catch (err) {
-        console.error("Error fetching incoming requests:", err);
+        toastBottomRight("Error fetching incoming requests:", err);
       }
     };
 
@@ -150,12 +152,14 @@ const FriendRequest = () => {
                           if (!res.ok)
                             throw new Error(data.error || "Accept failed");
 
-                          alert("Friend request accepted!");
+                          toast.success("✨Friend request accepted!");
                           setIncomingRequests((prev) =>
                             prev.filter((req) => req.user.id !== friendId)
                           );
                         } catch (error) {
-                          alert("Error accepting request: " + error.message);
+                          toastBottomRight(
+                            "Error accepting request: " + error.message
+                          );
                         }
                       }}
                     >
@@ -182,12 +186,14 @@ const FriendRequest = () => {
                           if (!res.ok)
                             throw new Error(data.error || "Reject failed");
 
-                          alert("Friend request rejected!");
+                          toast.success("✨Friend request rejected!");
                           setIncomingRequests((prev) =>
                             prev.filter((req) => req.user.id !== friendId)
                           );
                         } catch (error) {
-                          alert("Error rejecting request: " + error.message);
+                          toastBottomRight(
+                            "Error rejecting request: " + error.message
+                          );
                         }
                       }}
                     >

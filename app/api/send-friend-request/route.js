@@ -1,5 +1,6 @@
 // app/api/send-friend-request/route.js
 import { PrismaClient } from "@prisma/client";
+import { toastBottomRight } from "@/app/lib/toastify";
 
 const prisma = new PrismaClient();
 
@@ -56,7 +57,7 @@ export async function POST(request) {
       { status: 201 }
     );
   } catch (error) {
-    console.error(error);
+    toastBottomRight(error);
     return new Response(JSON.stringify({ error: "Internal Server Error" }), {
       status: 500,
     });

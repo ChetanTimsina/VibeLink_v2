@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import "./local.css";
 import "@/app/globals.css";
 import "@/app/local.css";
+import { toastBottomRight } from "@/app/lib/toastify";
 
 const Video = () => {
   useEffect(() => {
@@ -75,7 +76,7 @@ const Video = () => {
           });
         })
         .catch((err) => {
-          console.error("💀 Error fetching movies:", err);
+          toastBottomRight("💀 Error fetching movies:", err);
           container.innerHTML =
             "<p>Failed to load content. TMDB said nah 💔</p>";
         });

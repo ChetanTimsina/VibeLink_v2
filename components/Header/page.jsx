@@ -7,6 +7,7 @@ import "@/app/globals.css";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { toastBottomRight } from "@/app/lib/toastify";
 const Header = () => {
   const [user, setUser] = useState(null);
 
@@ -47,7 +48,7 @@ const Header = () => {
         const data = await res.json();
         setUser(data.user);
       } catch (error) {
-        console.error("Fetch error:", error);
+        toastBottomRight("Fetch error:", error);
         setUser({ username: "Unknown" });
       }
     };
@@ -227,7 +228,8 @@ const Header = () => {
               backgroundImage: `url(${profileImageSrc})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
-              border: "1px solid black",
+              border: "1px solid white",
+              outline: "1px solid black",
               cursor: "pointer",
             }}
             id="Account"
@@ -243,7 +245,8 @@ const Header = () => {
                       backgroundPosition: "center",
                       cursor: "pointer",
                       width: "3vw",
-                      border: "1px solid black",
+                      border: "1px solid white",
+                      outline: "1px solid black",
                       height: "3vw",
                     }}
                   ></section>

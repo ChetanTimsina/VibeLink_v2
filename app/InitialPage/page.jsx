@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import "./local.css";
+import { toast } from "react-hot-toast";
+import { toastBottomRight } from "@/app/lib/toastify";
 
 const InitialPage = () => {
   const router = useRouter();
@@ -38,11 +40,13 @@ const InitialPage = () => {
         router.push("/");
       } else {
         const data = await res.json();
-        alert(data.error || "Login failed ❌");
+
+        toast.error(data.error || "Login failed ❌");
       }
     } catch (error) {
-      console.error("Something went wrong 😵:", error);
-      alert("Server Error ❌");
+      toastBottomRight("Something went wrong 😵:", error);
+
+      toast.error("Server Error ❌");
     } finally {
       setLoading(false);
     }

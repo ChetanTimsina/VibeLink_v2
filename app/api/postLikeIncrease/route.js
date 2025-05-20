@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../lib/prisma";
+import { toastBottomRight } from "@/app/lib/toastify";
 
 export async function POST(req) {
   try {
@@ -24,7 +25,7 @@ export async function POST(req) {
       post: updatedPost,
     });
   } catch (err) {
-    console.error("💀 Error updating postLikes:", err);
+    toastBottomRight("💀 Error updating postLikes:", err);
     return NextResponse.json(
       { error: "Server broke down 💥" },
       { status: 500 }

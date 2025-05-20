@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
+import { toastBottomRight } from "@/app/lib/toastify";
 
 export async function POST(request) {
   try {
@@ -32,7 +33,7 @@ export async function POST(request) {
       },
     });
   } catch (error) {
-    console.error("Failed to fetch username 🧨:", error);
+    toastBottomRight("Failed to fetch username 🧨:", error);
     return new Response("Internal Server Error", { status: 500 });
   } finally {
     await prisma.$disconnect(); // tidy exit

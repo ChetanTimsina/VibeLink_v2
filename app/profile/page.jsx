@@ -5,6 +5,8 @@ import Cookies from "js-cookie";
 import "../globals.css";
 import "../localsecond.css";
 import "../local.css";
+import { toast } from "react-hot-toast";
+import { toastBottomRight } from "@/app/lib/toastify";
 
 const Page = () => {
   const [user, setUser] = useState(null);
@@ -41,7 +43,7 @@ const Page = () => {
         // Add fetched posts to accumulator
         allPosts.push(...data);
       } catch (err) {
-        console.error("Image fetch error 💥:", err);
+        toastBottomRight("Image fetch error 💥:", err);
       }
     }
 
@@ -99,7 +101,7 @@ const Page = () => {
               console.warn("😵 Server rejected like:", data.error);
             }
           } catch (err) {
-            console.error("💀 Error hitting like API:", err);
+            toastBottomRight("💀 Error hitting like API:", err);
           }
         });
       });
@@ -145,7 +147,7 @@ const Page = () => {
           const data = await res.json();
           return data.username || "Unknown Author";
         } catch (err) {
-          console.error(err);
+          toastBottomRight(err);
           return "Unknown Author";
         }
       }
@@ -229,7 +231,7 @@ const Page = () => {
       const data = await res.json();
       setUser(data.user);
     } catch (error) {
-      console.error("Fetch error:", error);
+      toastBottomRight("Fetch error:", error);
       setUser({ username: "Unknown" });
     }
   };
@@ -243,7 +245,7 @@ const Page = () => {
     const fetchFriends = async () => {
       const userId = Cookies.get("vibeUser");
       if (!userId) {
-        console.error("No user found in cookies");
+        toastBottomRight("No user found in cookies");
         return;
       }
 
@@ -260,7 +262,7 @@ const Page = () => {
         const data = await res.json();
         setFriends(data);
       } catch (err) {
-        console.error("Error fetching friends:", err);
+        toastBottomRight("Error fetching friends:", err);
       }
     };
 
@@ -299,15 +301,15 @@ const Page = () => {
 
       if (res.ok) {
         console.log("Profile Change successfully");
-        alert("Profile Change successfully");
+        toast.success("Profile Change successfully");
         setImagePreview(null);
         setImage(null);
         fetchUsername();
       } else {
-        alert("Profile Change error");
+        toast.error("Profile Change error");
       }
     } catch (err) {
-      console.error("Error uploading post:", err);
+      toastBottomRight("Error uploading post:", err);
     }
   };
 
@@ -343,15 +345,15 @@ const Page = () => {
 
       if (res.ok) {
         console.log("Story Change successfully");
-        alert("Story Change successfully");
+        toast.success("Story Change successfully");
         setSImagePreview(null);
         setSImage(null);
         fetchUsername();
       } else {
-        alert("Story Change error");
+        toast.error("Story Change error");
       }
     } catch (err) {
-      console.error("Error uploading post:", err);
+      toastBottomRight("Error uploading post:", err);
     }
   };
 

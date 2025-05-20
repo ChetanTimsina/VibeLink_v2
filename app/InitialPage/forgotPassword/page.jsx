@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import "../local.css";
+import { toastBottomRight } from "@/app/lib/toastify";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -25,7 +26,7 @@ const ForgotPassword = () => {
       // Check if the response is OK
       if (!response.ok) {
         const errorData = await response.text(); // If the response isn't JSON, handle it as text
-        console.error("Error Response:", errorData);
+        toastBottomRight("Error Response:", errorData);
         setError("Something went wrong, please try again.");
         return;
       }
@@ -40,7 +41,7 @@ const ForgotPassword = () => {
         setError(data.error || "Something went wrong!");
       }
     } catch (err) {
-      console.error("Error during fetch:", err);
+      toastBottomRight("Error during fetch:", err);
       setError("Server error. Please try again later.");
     }
   };

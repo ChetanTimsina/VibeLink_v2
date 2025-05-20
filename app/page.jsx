@@ -6,7 +6,8 @@ import Link from "next/link";
 import Cookies from "js-cookie";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import FriendRequest from "./friend/friend-left/friendRequest/page";
+import { toast } from "react-hot-toast";
+import { toastBottomRight } from "@/app/lib/toastify";
 
 export default function Home() {
   const [text, setText] = useState("");
@@ -51,7 +52,7 @@ export default function Home() {
         const data = await res.json();
         setUser(data.user);
       } catch (error) {
-        console.error("Fetch error:", error);
+        toastBottomRight("Fetch error:", error);
         setUser({ username: "Unknown" });
       }
     };
@@ -104,16 +105,16 @@ export default function Home() {
 
       if (res.ok) {
         console.log("Post uploaded successfully");
-        alert("Post uploaded successfully");
+        toast.success("✨Post uploaded successfully");
         setText("");
         setImagePreview(null);
         setImage(null);
         createPosts();
       } else {
-        alert("Post uploaded error");
+        toast.error("🚨Post uploaded error");
       }
     } catch (err) {
-      console.error("Error uploading post:", err);
+      toastBottomRight("Error uploading post:", err);
     }
   };
 
@@ -136,7 +137,7 @@ export default function Home() {
       const user = Cookies.get("vibeUser"); // Get userId from cookie
 
       if (!user) {
-        console.error("No user found in cookies");
+        toastBottomRight("No user found in cookies");
         return;
       }
 
@@ -154,7 +155,7 @@ export default function Home() {
         const data = await res.json();
         setFriends(data);
       } catch (err) {
-        console.error("Error fetching friends:", err);
+        toastBottomRight("Error fetching friends:", err);
       }
     };
 
@@ -263,7 +264,7 @@ export default function Home() {
         // Add fetched posts to accumulator
         allPosts.push(...data);
       } catch (err) {
-        console.error("Image fetch error 💥:", err);
+        toastBottomRight("Image fetch error 💥:", err);
       }
     }
 
@@ -321,7 +322,7 @@ export default function Home() {
               console.warn("😵 Server rejected like:", data.error);
             }
           } catch (err) {
-            console.error("💀 Error hitting like API:", err);
+            toastBottomRight("💀 Error hitting like API:", err);
           }
         });
       });
@@ -367,7 +368,7 @@ export default function Home() {
           const data = await res.json();
           return data.username || "Unknown Author";
         } catch (err) {
-          console.error(err);
+          toastBottomRight(err);
           return "Unknown Author";
         }
       }
@@ -424,7 +425,8 @@ export default function Home() {
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 cursor: "pointer",
-                border: "1px solid black",
+                border: "1px solid white",
+                outline: "1px solid black",
               }}
               onClick={() => {
                 router.push("/profile");
@@ -529,7 +531,8 @@ export default function Home() {
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                   cursor: "pointer",
-                  border: "1px solid black",
+                  border: "1px solid white",
+                  outline: "1px solid black",
                 }}
                 onClick={() => {
                   router.push("/profile");
@@ -609,7 +612,8 @@ export default function Home() {
                             backgroundSize: "cover",
                             backgroundPosition: "center",
                             cursor: "pointer",
-                            border: "1px solid black",
+                            border: "1px solid white",
+                            outline: "1px solid black",
                           }}
                         ></section>
                         <section>
@@ -726,11 +730,12 @@ export default function Home() {
           <div id="story-container" className="flex hide-scrollbar">
             <section className="story-card-alternate">
               <div
-                className="main-story adjustForImage"
+                className="main-story"
                 style={{
                   backgroundImage: `url(${profileImageSrc})`,
-                  backgroundSize: "cover",
+                  backgroundSize: "contain",
                   backgroundPosition: "center",
+                  backgroundRepeat: "repeat",
                   cursor: "pointer",
                 }}
                 onClick={() => {
@@ -835,7 +840,7 @@ export default function Home() {
                       alt="Post"
                       style={{ width: "300px", height: "auto" }}
                       onError={(e) => {
-                        console.error("🧨 Image load failed", e);
+                        toastBottomRight("🧨 Image load failed", e);
                       }}
                     />
                   ) : (

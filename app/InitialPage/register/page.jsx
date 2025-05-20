@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie"; // For setting cookies after login
+import { toastBottomRight } from "@/app/lib/toastify";
 
 import "../local.css";
 
@@ -66,7 +67,7 @@ const Register = () => {
         setErrorMessage(registerData.error || "Something went wrong!");
       }
     } catch (error) {
-      console.error(error);
+      toastBottomRight(error);
       setErrorMessage("Something went wrong, please try again later.");
     } finally {
       setLoading(false);

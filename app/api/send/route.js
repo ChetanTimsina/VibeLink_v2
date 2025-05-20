@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import { PrismaClient } from "@prisma/client"; // Make sure to import PrismaClient correctly
+import { toastBottomRight } from "@/app/lib/toastify";
 
 const prisma = new PrismaClient();
 
@@ -47,7 +48,7 @@ export async function POST(req) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error:", error); // More specific error logging
+    toastBottomRight("Error:", error); // More specific error logging
     return new Response(
       JSON.stringify({ message: "Error sending email", error: error.message }),
       { status: 500 }

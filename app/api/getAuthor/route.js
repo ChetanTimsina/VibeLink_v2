@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../lib/prisma"; // adjust path as needed
+import { toastBottomRight } from "@/app/lib/toastify";
 
 export async function GET(req) {
   try {
@@ -33,7 +34,7 @@ export async function GET(req) {
 
     return NextResponse.json({ username: user.username });
   } catch (error) {
-    console.error("🔥 Error fetching author:", error);
+    toastBottomRight("🔥 Error fetching author:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

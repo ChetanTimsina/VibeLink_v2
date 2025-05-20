@@ -5,6 +5,7 @@ import "../friend/local.css";
 import "../local.css";
 import { useEffect } from "react";
 import Cookies from "js-cookie";
+import { toastBottomRight } from "@/app/lib/toastify";
 
 const Group = () => {
   const user = Cookies.get("vibeUser");
@@ -33,7 +34,7 @@ const Group = () => {
       const user = Cookies.get("vibeUser");
 
       if (!user) {
-        console.error("No user found in cookies");
+        toastBottomRight("No user found in cookies");
         return;
       }
 
@@ -51,7 +52,7 @@ const Group = () => {
         const data = await res.json();
         setFriends(data);
       } catch (err) {
-        console.error("Error fetching friends:", err);
+        toastBottomRight("Error fetching friends:", err);
       }
     };
 
@@ -84,7 +85,7 @@ const Group = () => {
         // Add fetched posts to accumulator
         allPosts.push(...data);
       } catch (err) {
-        console.error("Image fetch error 💥:", err);
+        toastBottomRight("Image fetch error 💥:", err);
       }
     }
 
@@ -142,7 +143,7 @@ const Group = () => {
               console.warn("😵 Server rejected like:", data.error);
             }
           } catch (err) {
-            console.error("💀 Error hitting like API:", err);
+            toastBottomRight("💀 Error hitting like API:", err);
           }
         });
       });
@@ -188,7 +189,7 @@ const Group = () => {
           const data = await res.json();
           return data.username || "Unknown Author";
         } catch (err) {
-          console.error(err);
+          toastBottomRight(err);
           return "Unknown Author";
         }
       }

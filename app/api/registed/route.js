@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client"; // straight import
 const prisma = new PrismaClient(); // create instance bro
+import { toastBottomRight } from "@/app/lib/toastify";
 
 export async function POST(request) {
   try {
@@ -28,7 +29,7 @@ export async function POST(request) {
       },
     });
   } catch (error) {
-    console.error("Login failed 🧨:", error);
+    toastBottomRight("Login failed 🧨:", error);
     return new Response("Internal Server Error", { status: 500 });
   } finally {
     await prisma.$disconnect(); // always clean up bro
