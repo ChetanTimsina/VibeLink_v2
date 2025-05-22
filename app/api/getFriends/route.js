@@ -10,7 +10,6 @@ export async function POST(req) {
       return NextResponse.json({ error: "Invalid userId" }, { status: 400 });
     }
 
-    // Get all accepted friends where user is either the sender or receiver
     const acceptedFriends = await prisma.friendList.findMany({
       where: {
         status: "accepted",
@@ -36,9 +35,14 @@ export async function POST(req) {
       },
     });
 
-    // Normalize the friend (get the person who is NOT the user)
     const friends = acceptedFriends.map((relation) => {
-      return relation.userId === userIdInt ? relation.friend : relation.user;
+      const friend =
+        relation.userId === userIdInt ? relation.friend : relation.user;
+
+      return {
+        friendListId: relation.id,
+        ...friend,
+      };
     });
 
     return NextResponse.json(friends);

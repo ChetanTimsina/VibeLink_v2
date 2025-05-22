@@ -118,6 +118,7 @@
   margin: 0.5vw 0;
   position: relative;
   border: 0.2vw solid blue;
+  cursor: pointer;
 }
 #contact-container > section {
   display: flex;
@@ -445,6 +446,7 @@
 }
 .contact-name {
   padding-left: 0.5vw;
+  cursor: pointer;
 }
 .post-title-local {
   font-weight: lighter;
@@ -452,4 +454,7 @@
   border-left: 2px solid blue;
   padding-left: 0.5vw;
   height: 2vw;
+}
+.groupImage {
+  background-image: url(/groupchat.png);
 }

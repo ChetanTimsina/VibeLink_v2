@@ -9,6 +9,8 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { toastBottomRight } from "@/app/lib/toastify";
 
+const userId = Cookies.get("vibeUser");
+
 export default function Home() {
   const [text, setText] = useState("");
   const [image, setImage] = useState(null);
@@ -34,7 +36,6 @@ export default function Home() {
     : "/Images/profile.svg";
 
   useEffect(() => {
-    const userId = Cookies.get("vibeUser");
     if (!userId) return;
 
     const fetchUsername = async () => {
@@ -211,11 +212,26 @@ export default function Home() {
         friendClone.style.display = "flex";
         friendClone.querySelector(".contact-name").textContent =
           friend.username;
+        console.log(friend);
 
         friendClone.querySelector(
           ".box-right-icon"
         ).style.backgroundImage = `url('${friendImageSrc}')`;
 
+        friendClone
+          .querySelector(".box-right-icon")
+          .addEventListener("click", () => {
+            router.push(`/profile?userId=${friend.id}`);
+          });
+
+        friendClone
+          .querySelector(".contact-name")
+          .addEventListener("click", () => {
+            window.open(
+              `http://10.2.26.127:3000/message?roomId=${friend.friendListId}&currentUser=${userId}`,
+              "_blank"
+            );
+          });
         contact_container.appendChild(friendClone);
       });
 
@@ -535,7 +551,7 @@ export default function Home() {
                   outline: "1px solid black",
                 }}
                 onClick={() => {
-                  router.push("/profile");
+                  router.push(`/profile?userId=${user?.id}`);
                 }}
               ></div>
               <input
@@ -550,7 +566,12 @@ export default function Home() {
               id="center-top-button"
               className="flex justify-content-between aic gap-2"
             >
-              <button>
+              <button
+                onClick={() => {
+                  router.push("/video");
+                }}
+                style={{ cursor: "pointer" }}
+              >
                 <img
                   src="https://static.xx.fbcdn.net/rsrc.php/v4/yr/r/c0dWho49-X3.png"
                   alt=""
@@ -739,14 +760,14 @@ export default function Home() {
                   cursor: "pointer",
                 }}
                 onClick={() => {
-                  router.push("/profile");
+                  router.push(`/profile?userId=${user?.id}`);
                 }}
               >
                 <div
                   id="add-story"
                   className="adjustForImage"
                   onClick={() => {
-                    router.push("/profile");
+                    router.push(`/profile?userId=${user?.id}`);
                   }}
                 ></div>
               </div>
@@ -905,6 +926,20 @@ export default function Home() {
               className="contact-container"
               style={{ overflowY: "scroll", height: "25vw" }}
             >
+              <div>
+                <section
+                  className="friend-template3 aic flex"
+                  onClick={() => {
+                    window.open(
+                      `http://10.2.26.127:3000/message?roomId=GroupChat&currentUser=${userId}`,
+                      "_blank"
+                    );
+                  }}
+                >
+                  <div className="box-right-icon adjustForImage groupImage"></div>
+                  <h6 className="contact-name">Group</h6>
+                </section>
+              </div>
               <div style={{ display: "none" }}>
                 <section className="friend-template aic flex">
                   <div className="box-right-icon adjustForImage"></div>

@@ -1,5 +1,3 @@
-/* ONLY GENERAL CSS FOR HEADER AND FOOTER */
-
 /* --------- COMPONENT STYLES ----------*/
 #main-container {
   position: relative;
@@ -229,14 +227,22 @@ button {
   width: 3vw;
   height: 3vw;
   border-radius: 50%;
-  background-color: #e2e5e9;
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
+  border: 1px solid white;
+  outline: 1px solid black;
 }
 .not-container {
   gap: 1vw;
   margin: 1vw 0;
+  display: flex;
+  align-items: center;
+  font-size: 2vw;
+  position: relative;
+  border: 1px solid black;
+  border-radius: 0.5vw;
+  padding: 0.3vw;
 }
 #Menu {
   background-image: url(/Images/nav-right-menu.svg);

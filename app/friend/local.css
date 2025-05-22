@@ -74,9 +74,12 @@
 .friend-image {
   width: 100%;
   height: 60%;
-  background-size: 60%;
+  background-size: cover;
+  border-radius: 50%;
+  border: 2.5vw solid white;
   background-position: center;
   background-image: url("/Images/profile.svg");
+  cursor: pointer;
 }
 #friend-container-area {
   width: 100%;

@@ -8,8 +8,114 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { toastBottomRight } from "@/app/lib/toastify";
+import { toast } from "react-hot-toast";
 const Header = () => {
   const [user, setUser] = useState(null);
+
+  const [incomingRequests, setIncomingRequests] = useState([]);
+
+  const router = useRouter();
+
+  const userId = Cookies.get("vibeUser");
+
+  useEffect(() => {
+    if (!userId) return;
+
+    const fetchIncomingRequests = async () => {
+      try {
+        const response = await fetch("/api/get-friend-request", {
+          method: "POST",
+          body: JSON.stringify({ userId }),
+          headers: { "Content-Type": "application/json" },
+        });
+
+        const data = await response.json();
+
+        setIncomingRequests(data.requests || []);
+      } catch (err) {
+        toastBottomRight("Error fetching incoming requests:", err);
+      }
+    };
+
+    fetchIncomingRequests();
+  }, [userId]);
+
+  useEffect(() => {
+    const updateNotification = () => {
+      const All_container = document.querySelector(".All-container");
+      for (let request of incomingRequests) {
+        if (String(request.friendId) === String(userId)) {
+          const not = document.querySelector(".not-container").cloneNode(true);
+          not.style.display = "flex";
+          not.querySelector("h6").innerText = `${request.user.username}`;
+          const friendRequestedImage = request.user.userImage
+            ? `data:image/png;base64,${getBase64FromBuffer(
+                request.user.userImage
+              )}`
+            : "/Images/profile.svg";
+          not.querySelector(
+            ".not-image-container"
+          ).style.backgroundImage = `url(${friendRequestedImage})`;
+          const friendId = request.userId;
+          not
+            .querySelector(".not-image-container")
+            .addEventListener("click", () => {
+              router.push(`/profile?userId=${friendId}`);
+            });
+          not
+            .querySelector(".Accept-button")
+            .addEventListener("click", async () => {
+              try {
+                const res = await fetch("/api/friend-request-accept", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ userId, friendId }),
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Accept failed");
+
+                toast.success("✨Friend request accepted!");
+                setIncomingRequests((prev) =>
+                  prev.filter((req) => req.user.id !== friendId)
+                );
+              } catch (error) {
+                toastBottomRight(
+                  "✨Error accepting friend request: " + error.message
+                );
+              }
+            });
+          not
+            .querySelector(".Reject-button")
+            .addEventListener("click", async () => {
+              try {
+                const res = await fetch("/api/friend-request-reject", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ userId, friendId }),
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Reject failed");
+                else {
+                  toast.success("✨Friend request rejected!");
+                  updateNotification();
+                  setIncomingRequests((prev) =>
+                    prev.filter((req) => req.user.id !== friendId)
+                  );
+                }
+              } catch (error) {
+                toastBottomRight(
+                  "Error rejecting friend request: " + error.message
+                );
+              }
+            });
+          All_container.append(not);
+        }
+      }
+    };
+    updateNotification();
+  }, [incomingRequests]);
 
   const getBase64FromBuffer = (bufferData) => {
     if (!bufferData) return null;
@@ -55,7 +161,6 @@ const Header = () => {
 
     fetchUsername();
   }, []);
-  const router = useRouter();
 
   const handleLogout = () => {
     Cookies.remove("isLoggedIn");
@@ -204,21 +309,46 @@ const Header = () => {
                 <h3>Notification</h3>
                 <section id="not-more"></section>
               </div>
-              <div id="not-button-container">
-                <button>All</button>
-                <button>Unread</button>
-              </div>
-              <div className="flex aic not-container">
-                <section className="not-image-container"></section>
-                <h6>Dummy-text</h6>
-              </div>
-              <div className="flex aic not-container">
-                <section className="not-image-container"></section>
-                <h6>Dummy-text</h6>
-              </div>
-              <div className="flex aic not-container">
-                <section className="not-image-container"></section>
-                <h6>Dummy-text</h6>
+              <br />
+              <div className="All-container">
+                <div className="not-container" style={{ display: "none" }}>
+                  <section className="not-image-container"></section>
+                  <h6>Dummy-text</h6>
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "0.5",
+                      right: "0",
+                      padding: "0.3vw",
+                      display: "flex",
+                      gap: "0.3vw",
+                    }}
+                  >
+                    <button
+                      style={{
+                        backgroundColor: "green",
+                        color: "white",
+                        padding: "0.3vw 0.5vw",
+                        borderRadius: "0.2vw",
+                        cursor: "pointer",
+                      }}
+                      className="Accept-button"
+                    >
+                      Accept
+                    </button>
+                    <button
+                      style={{
+                        backgroundColor: "#e2e5e9",
+                        padding: "0.3vw 0.5vw",
+                        borderRadius: "0.2vw",
+                        cursor: "pointer",
+                      }}
+                      className="Reject-button"
+                    >
+                      Reject
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </section>

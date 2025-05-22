@@ -14,14 +14,14 @@ const Footer = () => {
             <br />
             <form id="footer-form" action="\journals" method="post">
               <section>
-                <label for="Email" style={{ fontSize: "1.3vw" }}>
+                <label htmlFor="Email" style={{ fontSize: "1.3vw" }}>
                   Email Address
                 </label>
                 <br />
                 <input type="email" id="Email" />
               </section>
               <section>
-                <label for="birthday" style={{ fontSize: "1.3vw" }}>
+                <label htmlFor="birthday" style={{ fontSize: "1.3vw" }}>
                   Birthday
                 </label>
                 <br />
