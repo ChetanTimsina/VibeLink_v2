@@ -228,7 +228,7 @@ export default function Home() {
           .querySelector(".contact-name")
           .addEventListener("click", () => {
             window.open(
-              `http://10.2.26.127:3000/message?roomId=${friend.friendListId}&currentUser=${userId}`,
+              `http://10.2.26.117:3000/message?roomId=${friend.friendListId}&currentUser=${userId}`,
               "_blank"
             );
           });
@@ -433,7 +433,11 @@ export default function Home() {
       <div className="container">
         {/* <!-- LEFT SECTION --> */}
         <div className="box" id="box-left">
-          <section>
+          <section
+            onClick={() => {
+              router.push(`/profile?userId=${user?.id}`);
+            }}
+          >
             <div
               className="box-left-icon profile-image"
               style={{
@@ -443,9 +447,6 @@ export default function Home() {
                 cursor: "pointer",
                 border: "1px solid white",
                 outline: "1px solid black",
-              }}
-              onClick={() => {
-                router.push(`/profile?userId=${user?.id}`);
               }}
             ></div>
             <h6>{user?.username}</h6>
@@ -931,7 +932,7 @@ export default function Home() {
                   className="friend-template3 aic flex"
                   onClick={() => {
                     window.open(
-                      `http://10.2.26.127:3000/message?roomId=GroupChat&currentUser=${userId}`,
+                      `http://10.2.26.117:3000/message?roomId=GroupChat&currentUser=${userId}`,
                       "_blank"
                     );
                   }}

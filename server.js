@@ -1,6 +1,6 @@
 const { createServer } = require("http");
 const next = require("next");
-const { setupSocket } = require("./server/socket"); // 👈 path to socket logic
+const { setupSocket } = require("./server/socket"); // Your socket logic
 
 const port = 3000;
 const dev = process.env.NODE_ENV !== "production";
@@ -12,9 +12,10 @@ app.prepare().then(() => {
     handle(req, res);
   });
 
-  setupSocket(server); // 👀 WebSocket magic here
+  // Plug in the socket.io magic
+  setupSocket(server);
 
-  server.listen(port, () => {
+  server.listen(port, "0.0.0.0", () => {
     console.log(`✅ Server ready on http://localhost:${port}`);
   });
 });

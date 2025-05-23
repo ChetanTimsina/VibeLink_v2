@@ -296,7 +296,9 @@ const Friend = () => {
               justifyContent: "space-between",
             }}
           >
-            <h4 style={{ fontSize: "1.5vw" }}>Friend Suggestions</h4>
+            <h4 style={{ fontSize: "1.5vw", marginBottom: "2vw" }}>
+              Friend Suggestions
+            </h4>
             <h6 style={{ color: "blue", fontSize: "1.5vw" }}>See all</h6>
           </div>
         </div>

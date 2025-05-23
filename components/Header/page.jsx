@@ -269,6 +269,7 @@ const Header = () => {
             <div id="messenger-container" style={{ display: "none" }}>
               <div>
                 <h3>Chats</h3>
+                <br />
               </div>
               <div>
                 <input
@@ -284,12 +285,23 @@ const Header = () => {
                 >
                   Inbox
                 </button>
-                <button>Communities</button>
               </div>
               <div
                 className="contact-container"
                 style={{ overflowY: "scroll", height: "23vw" }}
               >
+                <section
+                  className="friend-template3 aic flex"
+                  onClick={() => {
+                    window.open(
+                      `http://10.2.26.117:3000/message?roomId=GroupChat&currentUser=${userId}`,
+                      "_blank"
+                    );
+                  }}
+                >
+                  <div className="box-right-icon adjustForImage groupImage"></div>
+                  <h6 className="contact-name">Group</h6>
+                </section>
                 <div style={{ display: "none" }}>
                   <section className="friend-template flex gap-2 aic">
                     <div className="box-right-icon adjustForImage">
