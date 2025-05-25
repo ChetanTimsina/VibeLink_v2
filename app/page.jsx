@@ -576,7 +576,7 @@ export default function Home() {
               ></div>
               <input
                 type="search"
-                placeholder="What's on your mind?"
+                placeholder="What is on your mind?"
                 id="searchBar"
                 style={{ width: "30vw" }}
               />

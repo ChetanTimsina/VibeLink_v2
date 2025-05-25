@@ -89,10 +89,10 @@ const Product = () => {
                 alt="Cozy Kids' Hoodie"
               />
             </div>
-            <div className="category">Kids' Fashion</div>
+            <div className="category">Kids Fashion</div>
             <div className="heading">
               {" "}
-              Cozy Kids' Hoodie
+              Cozy Kids Hoodie
               <div className="author">
                 {" "}
                 By <span className="name">Abi</span> 4 days ago
@@ -161,7 +161,7 @@ const Product = () => {
                 alt="Stylish Denim Jacket"
               />
             </div>
-            <div className="category">Women's Fashion</div>
+            <div className="category">Womens Fashion</div>
             <div className="heading">
               {" "}
               Stylish Denim Jacket
@@ -217,7 +217,7 @@ const Product = () => {
                 alt="Casual Polo Shirt"
               />
             </div>
-            <div className="category">Men's Fashion</div>
+            <div className="category">Mens Fashion</div>
             <div className="heading">
               {" "}
               Casual Polo Shirt
@@ -234,7 +234,7 @@ const Product = () => {
                 alt="Adorable Summer Dress"
               />
             </div>
-            <div className="category">Kids' Fashion</div>
+            <div className="category">Kids Fashion</div>
             <div className="heading">
               {" "}
               Adorable Summer Dress
@@ -272,7 +272,7 @@ const Product = () => {
                 alt="Elegant Evening Gown"
               />
             </div>
-            <div className="category">Women's Fashion</div>
+            <div className="category">Womens Fashion</div>
             <div className="heading">
               {" "}
               Elegant Evening Gown
@@ -326,10 +326,10 @@ const Product = () => {
                 alt="Casual Boys' T-Shirt"
               />
             </div>
-            <div className="category">Kids' Fashion</div>
+            <div className="category">Kids Fashion</div>
             <div className="heading">
               {" "}
-              Casual Boys' T-Shirt
+              Casual Boys T-Shirt
               <div className="author">
                 {" "}
                 By <span className="name">Abi</span> 4 days ago
@@ -382,7 +382,7 @@ const Product = () => {
                 alt="Classic Formal Suit"
               />
             </div>
-            <div className="category">Men's Fashion</div>
+            <div className="category">Mens Fashion</div>
             <div className="heading">
               {" "}
               Classic Formal Suit
@@ -417,7 +417,7 @@ const Product = () => {
                 alt="Chic Summer Dress"
               />
             </div>
-            <div className="category">Women's Fashion</div>
+            <div className="category">Womens Fashion</div>
             <div className="heading">
               {" "}
               Chic Summer Dress
@@ -435,7 +435,7 @@ const Product = () => {
                 alt="Stylish Leather Jacket"
               />
             </div>
-            <div className="category">Men's Fashion</div>
+            <div className="category">Mens Fashion</div>
             <div className="heading">
               {" "}
               Stylish Leather Jacket
@@ -473,10 +473,10 @@ const Product = () => {
                 alt="Trendy Kids' Sneakers"
               />
             </div>
-            <div className="category">Kids' Fashion</div>
+            <div className="category">Kids Fashion</div>
             <div className="heading">
               {" "}
-              Trendy Kids' Sneakers
+              Trendy Kids Sneakers
               <div className="author">
                 {" "}
                 By <span className="name">Abi</span> 4 days ago
@@ -524,7 +524,7 @@ const Product = () => {
                 alt="Casual Denim Jeans"
               />
             </div>
-            <div className="category">Men's Fashion</div>
+            <div className="category">Mens Fashion</div>
             <div className="heading">
               {" "}
               Casual Denim Jeans
@@ -562,7 +562,7 @@ const Product = () => {
                 alt="Classic Red Maxi Dress"
               />
             </div>
-            <div className="category">Women's Fashion</div>
+            <div className="category">Womens Fashion</div>
             <div className="heading">
               {" "}
               Classic Red Maxi Dress
@@ -616,7 +616,7 @@ const Product = () => {
                 alt="Casual Denim Jeans"
               />
             </div>
-            <div className="category">Men's Fashion</div>
+            <div className="category">Mens Fashion</div>
             <div className="heading">
               {" "}
               Casual Denim Jeans

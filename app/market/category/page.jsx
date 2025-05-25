@@ -504,7 +504,7 @@ const Category = () => {
               <div className="second-content">
                 <span className="second-content-text">
                   This adorable summer dress features soft cotton fabric, a cute
-                  floral print, and ruffled sleeves, making it perfect for kids'
+                  floral print, and ruffled sleeves, making it perfect for kids
                   casual outings.
                 </span>
                 <button className="AddToCarts second-content-button">

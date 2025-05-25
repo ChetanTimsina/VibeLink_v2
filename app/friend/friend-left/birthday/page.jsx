@@ -90,7 +90,7 @@ const Birthday = () => {
           className="profile-name"
           style={{ color: "#65686c", textAlign: "center" }}
         >
-          Select people's names to preview their profile.
+          Select peoples names to preview their profile.
         </h4>
       </div>
     </main>

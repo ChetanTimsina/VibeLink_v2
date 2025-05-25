@@ -6,7 +6,7 @@ const Footer = () => {
       <footer className="color-darker">
         <div id="cta">
           <section id="sign">
-            <h2>Don't Miss Out</h2>
+            <h2>Dont Miss Out</h2>
             <br />
             <p>
               Sign up for the latest beauty news, product samples and coupons
@@ -55,7 +55,7 @@ const Footer = () => {
             <h4>Beauty Magazine</h4>
             <h4>Tools and Consultations</h4>
             <h4>Offers</h4>
-            <h4>L'Oréal Paris</h4>
+            <h4>LOréal Paris</h4>
           </section>
           <section id="cta-link">
             <ul className="bottom_ul">
