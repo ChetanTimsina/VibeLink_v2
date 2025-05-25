@@ -184,7 +184,7 @@ const Header = () => {
             className="btn-color-mode-switch-inner"
             data-off="Light"
             data-on="Dark"
-            for="color_mode"
+            htmlFor="color_mode"
           ></label>
         </label>
         <img src="/Images/marketImages/moon.svg" alt="" />

@@ -1,5 +1,5 @@
 import "./globals.css";
-import Header from "@/components/Header/page";
+import Header from "@/components/Header/Header";
 import { Toaster } from "react-hot-toast";
 
 export const metadata = {

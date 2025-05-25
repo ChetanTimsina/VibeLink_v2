@@ -236,7 +236,10 @@ const Group = () => {
   return (
     <main id="main-container" className="flex bg-white">
       <div className="box-left">
-        <div className="box-left-top flex justify-content-between aic">
+        <div
+          className="box-left-top flex  justify-content-between aic"
+          style={{ display: "flex" }}
+        >
           <h3>
             <b>Groups</b>
           </h3>
@@ -275,15 +278,6 @@ const Group = () => {
             ></section>
             <a href="/friend">
               <h6>Friends</h6>
-            </a>
-          </section>
-          <section className="left-container">
-            <section
-              className="left-icon-container"
-              id="left-icon-15"
-            ></section>
-            <a href="/Index-left/broAI.html">
-              <h6>Bro AI</h6>
             </a>
           </section>
           <section className="left-container">

@@ -281,9 +281,6 @@ const Header = () => {
           </li>
         </ul>
         <div id="nav-right-container">
-          <section className="nav-right" id="Menu">
-            <div id="menu-container" style={{ display: "none" }}></div>
-          </section>
           <section className="nav-right" id="Messenger">
             <div id="messenger-container" style={{ display: "none" }}>
               <div>
@@ -313,7 +310,7 @@ const Header = () => {
                   className="friend-template3 aic flex"
                   onClick={() => {
                     window.open(
-                      `http://10.2.5.120:3000/message?roomId=GroupChat&currentUser=${userId}`,
+                      `http://10.2.26.226:3000/message?roomId=GroupChat&currentUser=${userId}`,
                       "_blank"
                     );
                   }}

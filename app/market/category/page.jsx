@@ -1,8 +1,36 @@
-import React from "react";
+"use client";
+import React, { useEffect } from "react";
 import "./local.css";
 import Image from "next/image";
 import "../local.css";
+import { toast } from "react-hot-toast";
 const Category = () => {
+  useEffect(() => {
+    let AddToCarts = document.querySelectorAll(".AddToCarts");
+    AddToCarts.forEach((Cart) => {
+      Cart.addEventListener("click", () => {
+        Cart.style.backgroundColor = "gray";
+      });
+    });
+    document.querySelectorAll(".AddToCarts").forEach((button) => {
+      button.addEventListener("click", (event) => {
+        let productCard = event.target.closest(".card");
+        if (productCard) {
+          let clonedHTML = productCard.outerHTML;
+
+          let cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+
+          if (!cartItems.includes(clonedHTML)) {
+            cartItems.push(clonedHTML);
+            localStorage.setItem("cart", JSON.stringify(cartItems));
+          } else {
+            // alert("Item already in cart!");
+            toast.error("Item already in cart!");
+          }
+        }
+      });
+    });
+  }, []);
   return (
     <main id="newMain">
       <div id="helper-container" className="color-darker">

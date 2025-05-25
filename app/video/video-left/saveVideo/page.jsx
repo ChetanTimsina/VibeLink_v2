@@ -47,7 +47,7 @@ const Video = () => {
                     "No overview 😶 Levon Cade left behind a decorated military career in the black ops to live a simple life working construction. But when his boss's daughter, who is like family to him, is taken by human traffickers, his search to bring her home uncovers a world of corruption far greater than he ever could have imagined."
                   }
                 </p>
-                <div class="ratio ratio-16x9">
+                <div className="ratio ratio-16x9" style={{ width: "100%" }}>
                   <iframe 
                     src="https://vidsrc.me/embed/movie/${movie.id}" 
                     title="${movie.title}" 

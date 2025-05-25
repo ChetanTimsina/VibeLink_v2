@@ -162,9 +162,6 @@ const FriendSuggestion = () => {
           }}
         >
           <h4 style={{ fontSize: "1.5vw" }}>Friend Suggestions</h4>
-          <h6 style={{ color: "blue", fontSize: "1.5vw", cursor: "pointer" }}>
-            See all
-          </h6>
         </div>
         <div id="friend-container-area">{friendSuggestionElements}</div>
       </div>

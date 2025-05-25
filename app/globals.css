@@ -19,7 +19,7 @@ ul {
 nav {
   display: flex;
   justify-content: space-between;
-  gap: 8vw;
+  gap: 9vw;
   padding: 1vw 3vw;
   align-items: center;
 }

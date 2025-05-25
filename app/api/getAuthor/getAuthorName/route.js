@@ -17,8 +17,9 @@ export async function POST(req) {
       select: {
         author: {
           select: {
+            id: true,
             username: true,
-            userImage: true, // 👈 added this line
+            userImage: true,
           },
         },
       },
@@ -34,6 +35,7 @@ export async function POST(req) {
     return NextResponse.json(
       {
         userImage: post.author.userImage,
+        author: post.author.id,
       },
       { status: 200 }
     );

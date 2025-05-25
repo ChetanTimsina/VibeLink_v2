@@ -12,9 +12,10 @@
   height: 100%;
 }
 #box-left {
-  position: absolute;
+  position: fixed;
   width: 20%;
   left: 1%;
+  height: 80%;
 }
 #box-center {
   position: absolute;
@@ -27,7 +28,7 @@
   -ms-overflow-style: none;
 }
 #box-right {
-  position: absolute;
+  position: fixed;
   width: 20%;
   left: 79%;
 }
@@ -35,7 +36,15 @@
   position: relative;
   top: 7vw;
 }
-#box-left > section {
+#box-left > section > a {
+  display: flex;
+  align-items: center;
+  gap: 1vw;
+  margin: 1vw 0;
+  cursor: pointer;
+  text-decoration: none;
+}
+#box-left > section:first-child {
   display: flex;
   align-items: center;
   gap: 1vw;
@@ -143,7 +152,8 @@
   height: 1.5vw;
   background-size: contain;
 }
-.wrong-icon {
+.wrong-icon,
+.wrong-icon-post {
   background-image: url(/Images/wrong.svg);
   width: 1.5vw;
   height: 1.5vw;
@@ -305,7 +315,6 @@
   left: 0;
   border-radius: 50%;
   overflow: hidden;
-  z-index: 1;
 }
 .react-2 {
   width: 1.5vw;
@@ -315,7 +324,6 @@
   left: 1.3vw;
   border-radius: 50%;
   overflow: hidden;
-  z-index: 2;
 }
 .react-3 {
   width: 1.5vw;
@@ -325,7 +333,10 @@
   left: 2.6vw;
   border-radius: 50%;
   overflow: hidden;
-  z-index: 3;
+}
+.post-name,
+#post-icon {
+  cursor: pointer;
 }
 .react-4,
 .react-5,

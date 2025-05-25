@@ -228,7 +228,7 @@ export default function Home() {
           .querySelector(".contact-name")
           .addEventListener("click", () => {
             window.open(
-              `http://10.2.5.120:3000/message?roomId=${friend.friendListId}&currentUser=${userId}`,
+              `http://10.2.26.226:3000/message?roomId=${friend.friendListId}&currentUser=${userId}`,
               "_blank"
             );
           });
@@ -245,6 +245,11 @@ export default function Home() {
       storyCard.querySelector(
         ".box-right-icon"
       ).style.backgroundImage = `url('${friendImageSrc}')`;
+      storyCard
+        .querySelector(".box-right-icon")
+        .addEventListener("click", () => {
+          router.push(`/profile?userId=${friend.id}`);
+        });
 
       storyCard.style.backgroundImage = `url('${storyImageSrc}')`;
       if (!(storyImageSrc === "/Images/profile.svg")) {
@@ -369,10 +374,16 @@ export default function Home() {
       postTitleLocal.innerHTML = post.postTitle;
       reactCount.innerHTML = post.postLikes ?? 0;
 
-      const wrongIcon = postClone.querySelector(".wrong-icon");
+      const wrongIcon = postClone.querySelector(".wrong-icon-post");
       if (wrongIcon) {
         wrongIcon.addEventListener("click", () => {
           postClone.style.display = "none";
+        });
+      }
+      const moreIcon = postClone.querySelector(".more-icon");
+      if (moreIcon) {
+        moreIcon.addEventListener("click", () => {
+          document.querySelector(".report").style.display = "block";
         });
       }
 
@@ -392,6 +403,10 @@ export default function Home() {
       postClone.querySelector(
         "#post-icon"
       ).style.backgroundImage = `url(${postAuthorImageSrc})`;
+      postClone.querySelector("#post-icon").addEventListener("click", () => {
+        router.push(`/profile?userId=${data.author}`);
+      });
+
       async function setPostAuthor(postClone, postid) {
         const postAuthor = postClone.querySelector(".post-name");
         if (postAuthor) {
@@ -399,6 +414,10 @@ export default function Home() {
           postAuthor.textContent = username;
         }
       }
+      postClone.querySelector(".post-name").addEventListener("click", () => {
+        router.push(`/profile?userId=${data.author}`);
+      });
+
       const post_created_at = postClone.querySelector(".post-created-at");
       const dateObj = new Date(post.postCreatedAt);
       const formattedDate = `${String(dateObj.getDate()).padStart(
@@ -452,87 +471,87 @@ export default function Home() {
             <h6>{user?.username}</h6>
             {/* <!-- Change the profile name later --> */}
           </section>
-          <section>
+          {/* <section>
             <div className="box-left-icon" id="left-icon-1"></div>
             <h6>Fundraisers</h6>
-          </section>
+          </section> */}
           <section>
-            <div className="box-left-icon" id="left-icon-2"></div>
             <Link href="/friend">
+              <div className="box-left-icon" id="left-icon-2"></div>
               <h6>Friends</h6>
             </Link>
           </section>
-          <section>
+          {/* <section>
             <div className="box-left-icon" id="left-icon-3"></div>
             <h6>Play games</h6>
-          </section>
+          </section> */}
           <section>
-            <div className="box-left-icon" id="left-icon-4"></div>
             <Link href="/">
+              <div className="box-left-icon" id="left-icon-4"></div>
               <h6>Bro AI</h6>
             </Link>
           </section>
           <section>
-            <div className="box-left-icon" id="left-icon-5"></div>
             <Link href="/group">
+              <div className="box-left-icon" id="left-icon-5"></div>
               <h6>Pages</h6>
             </Link>
           </section>
-          <section>
+          {/* <section>
             <div className="box-left-icon" id="left-icon-6"></div>
             <h6>Saved</h6>
           </section>
           <section>
             <div className="box-left-icon" id="left-icon-7"></div>
             <h6>Ads Manager</h6>
-          </section>
+          </section> */}
           <section>
-            <div className="box-left-icon" id="left-icon-8"></div>
             <Link href="/friend/friend-left/birthday">
+              <div className="box-left-icon" id="left-icon-8"></div>
               <h6>Birthdays</h6>
             </Link>
           </section>
-          <section>
+          {/* <section>
             <div className="box-left-icon" id="left-icon-9"></div>
             <h6>Events</h6>
-          </section>
+          </section> */}
           <section>
-            <div className="box-left-icon" id="left-icon-10"></div>
             <Link href="/">
+              <div className="box-left-icon" id="left-icon-10"></div>
               <h6>Feeds</h6>
             </Link>
           </section>
           <section>
-            <div className="box-left-icon" id="left-icon-11"></div>
             <Link href="/group">
+              <div className="box-left-icon" id="left-icon-11"></div>
               <h6>Groups</h6>
             </Link>
           </section>
           <section>
-            <div className="box-left-icon" id="left-icon-12"></div>
             <Link href="/video/video-left/live">
+              <div className="box-left-icon" id="left-icon-12"></div>
               <h6>Live</h6>
             </Link>
           </section>
           <section>
-            <div className="box-left-icon" id="left-icon-13"></div>
             <Link href="/market">
+              <div className="box-left-icon" id="left-icon-13"></div>
               <h6>Marketplace</h6>
             </Link>
           </section>
-          <section>
+          {/* <section>
             <div className="box-left-icon" id="left-icon-14"></div>
             <h6>Memories</h6>
-          </section>
+          </section> */}
           <section>
-            <div className="box-left-icon" id="left-icon-15"></div>
             <Link href="/video/video-left/explore">
+              <div className="box-left-icon" id="left-icon-15"></div>
               <h6>Gaming Video</h6>
             </Link>
           </section>
           <section>
-            <div className="box-left-icon" id="left-icon-16"></div>
             <Link href="/video">
+              <div className="box-left-icon" id="left-icon-16"></div>
               <h6>Video</h6>
             </Link>
           </section>
@@ -739,17 +758,26 @@ export default function Home() {
                   </div>
                 </section>
               </div>
-              <button>
+              <button
+                onClick={() => {
+                  router.push("/friend/friend-left/allFriend");
+                }}
+                style={{ cursor: "pointer" }}
+              >
                 <img
                   src="https://static.xx.fbcdn.net/rsrc.php/v4/yd/r/Y4mYLVOhTwq.png"
                   alt=""
                 />
-                <h6>Feeling/Activity</h6>
+                <h6>All Friends</h6>
               </button>
             </div>
           </div>
           {/* <!-- Story Section--> */}
-          <div id="story-container" className="flex hide-scrollbar">
+          <div
+            id="story-container"
+            className="flex hide-scrollbar"
+            style={{ display: "flex" }}
+          >
             <section className="story-card-alternate">
               <div
                 className="main-story"
@@ -798,9 +826,27 @@ export default function Home() {
                     <p className="post-created-at">April 10 at 3:54PM</p>
                   </div>
                 </div>
-                <div className="flex" style={{ gap: "2vw" }}>
+                <div
+                  className="flex"
+                  style={{ gap: "2vw", position: "relative" }}
+                >
                   <section className="more-icon adjustForImage"></section>
-                  <section className="wrong-icon adjustForImage"></section>
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "2vw",
+                      fontSize: "0.8vw",
+                      backgroundColor: "white",
+                      padding: "0.5vw",
+                      cursor: "pointer",
+                      border: "2px solid black",
+                      display: "none",
+                    }}
+                    className="report"
+                  >
+                    Report Post
+                  </div>
+                  <section className="wrong-icon-post adjustForImage"></section>
                 </div>
               </section>
               <h3 className="post-title-local">Post title or description</h3>
@@ -932,7 +978,7 @@ export default function Home() {
                   className="friend-template3 aic flex"
                   onClick={() => {
                     window.open(
-                      `http://10.2.5.120:3000/message?roomId=GroupChat&currentUser=${userId}`,
+                      `http://10.2.26.226:3000/message?roomId=GroupChat&currentUser=${userId}`,
                       "_blank"
                     );
                   }}

@@ -1,95 +1,46 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./local.css";
 import "@/app/globals.css";
 import "@/app/local.css";
 import { toastBottomRight } from "@/app/lib/toastify";
 
 const Video = () => {
+  const [movies, setMovies] = useState([]);
+  const [error, setError] = useState(null);
+
+  const API_KEY =
+    "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0MGRmZjRmOWFjYmMxOWQ4YWFhNjgxNGU2OWMxYzA5NSIsIm5iZiI6MTc0NDY0NzIwMC44NTMsInN1YiI6IjY3ZmQzNDIwZGU1ZTRkZWM2MmFlNDE3NCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.0gSs7Lykhd0Ln0Ry0NYmREu-RQ49MdqkalEp04zykkI";
+
   useEffect(() => {
-    const options = {
-      method: "GET",
-      headers: {
-        accept: "application/json",
-        Authorization:
-          "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0MGRmZjRmOWFjYmMxOWQ4YWFhNjgxNGU2OWMxYzA5NSIsIm5iZiI6MTc0NDY0NzIwMC44NTMsInN1YiI6IjY3ZmQzNDIwZGU1ZTRkZWM2MmFlNDE3NCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.0gSs7Lykhd0Ln0Ry0NYmREu-RQ49MdqkalEp04zykkI",
-      },
+    const fetchMovies = async () => {
+      try {
+        const urls = [
+          "https://api.themoviedb.org/3/trending/movie/day",
+          "https://api.themoviedb.org/3/movie/upcoming",
+        ];
+
+        const options = {
+          method: "GET",
+          headers: {
+            accept: "application/json",
+            Authorization: `Bearer ${API_KEY}`,
+          },
+        };
+
+        const allMovies = await Promise.all(
+          urls.map((url) => fetch(url, options).then((res) => res.json()))
+        );
+
+        const combinedResults = allMovies.flatMap((res) => res.results || []);
+        setMovies(combinedResults);
+      } catch (err) {
+        setError("TMDB said nah 💔");
+        toastBottomRight("💀 Error fetching movies:", err);
+      }
     };
 
-    const createMovieSection = (apiUrl, containerSelector) => {
-      const container = document.querySelector(containerSelector);
-
-      fetch(apiUrl, options)
-        .then((res) => res.json())
-        .then((data) => {
-          data.results.forEach((movie) => {
-            const card = document.createElement("div");
-            card.classList.add("card", "mb-4");
-            card.style.maxWidth = "720px";
-
-            card.innerHTML = `
-              <div class="card-body">
-                <section class="post-top" style="width: 100%">
-                  <div class="flex aic gap" style="flex-direction: row">
-                    <div id="post-icon" class="adjustForImage"></div>
-                    <div class="post-title d-flex flex-column">
-                      <p class="card-title"><b>${movie.title}</b></p>
-                    </div>
-                  </div>
-                  <div class="flex gap" style="flex-direction: row">
-                    <section class="more-icon adjustForImage"></section>
-                    <section class="wrong-icon adjustForImage" style="cursor: pointer;"></section>
-                  </div>
-                </section>
-                <p class="card-text">
-                  ${
-                    movie.overview ||
-                    "No overview 😶 Levon Cade left behind a decorated military career in the black ops to live a simple life working construction. But when his boss's daughter, who is like family to him, is taken by human traffickers, his search to bring her home uncovers a world of corruption far greater than he ever could have imagined."
-                  }
-                </p>
-                <div class="ratio ratio-16x9">
-                  <iframe 
-                    src="https://vidsrc.me/embed/movie/${movie.id}" 
-                    title="${movie.title}" 
-                    allowfullscreen 
-                    width="100%" 
-                    height="400" 
-                    frameborder="0">
-                  </iframe>
-                </div>
-                <hr />
-                <div class="flex aic gap" style="flex-direction: row">
-                  <section class="post-bottom-icon-container">
-                    <div class="flex aic gap"  style="flex-direction: row">
-                    <div class="post-bottom-icon adjustForImage" id="react"></div>
-                    <p>Like</p>
-                    </div>
-                  </section>
-                </div>
-              </div>
-            `;
-            container.appendChild(card);
-            const wrongIcon = card.querySelector(".wrong-icon");
-            wrongIcon.addEventListener("click", () => {
-              card.style.display = "none";
-            });
-          });
-        })
-        .catch((err) => {
-          toastBottomRight("💀 Error fetching movies:", err);
-          container.innerHTML =
-            "<p>Failed to load content. TMDB said nah 💔</p>";
-        });
-    };
-
-    createMovieSection(
-      "https://api.themoviedb.org/3/trending/movie/day",
-      ".box-main"
-    );
-    createMovieSection(
-      "https://api.themoviedb.org/3/movie/upcoming",
-      ".box-main"
-    );
+    fetchMovies();
   }, []);
 
   return (
@@ -129,7 +80,76 @@ const Video = () => {
 
       {/* Main Content */}
       <div className="box-main flex flex-column aic p-5">
-        {/* Cards will auto-append here by JS */}
+        {error ? (
+          <p>{error}</p>
+        ) : (
+          movies.map((movie, idx) => (
+            <div
+              key={`${movie.id}-${idx}`}
+              className="card mb-4"
+              style={{ maxWidth: "720px" }}
+            >
+              <div
+                className="card-body"
+                style={{ position: "relative", overflow: "hidden" }}
+              >
+                <section className="post-top">
+                  <div
+                    className="flex aic gap"
+                    style={{ flexDirection: "row" }}
+                  >
+                    <div id="post-icon" className="adjustForImage"></div>
+                    <div className="post-title d-flex flex-column">
+                      <p className="card-title">
+                        <b>{movie.title}</b>
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap" style={{ flexDirection: "row" }}>
+                    <section className="more-icon adjustForImage"></section>
+                    <section
+                      className="wrong-icon adjustForImage"
+                      style={{ cursor: "pointer" }}
+                      onClick={(e) => e.currentTarget.closest(".card").remove()}
+                    ></section>
+                  </div>
+                </section>
+
+                <p className="card-text">
+                  {movie.overview ||
+                    "No overview 😶 Levon Cade left behind a decorated military career..."}
+                </p>
+
+                <div className="ratio ratio-16x9" style={{ width: "100%" }}>
+                  <iframe
+                    src={`https://vidsrc.me/embed/movie/${movie.id}`}
+                    title={movie.title}
+                    allowFullScreen
+                    width="90%"
+                    height="400"
+                  ></iframe>
+                </div>
+
+                <hr />
+
+                <div className="flex aic gap" style={{ flexDirection: "row" }}>
+                  <section className="post-bottom-icon-container">
+                    <div
+                      className="flex aic gap"
+                      style={{ flexDirection: "row" }}
+                    >
+                      <div
+                        className="post-bottom-icon adjustForImage"
+                        id="react"
+                      ></div>
+                      <p>Like</p>
+                    </div>
+                  </section>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </main>
   );
