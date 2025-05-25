@@ -941,7 +941,7 @@ export default function Home() {
                 className="adjustForImage sponsor-image-container"
                 id="sponsor-image-1"
               ></div>
-              <h6>PlayerUnknown's BattleGrounds</h6>
+              <h6>PlayerUnknown BattleGrounds</h6>
             </a>
           </section>
           <section className="flex aic">

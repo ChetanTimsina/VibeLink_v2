@@ -528,7 +528,7 @@ const Category = () => {
                   />
                 </div>
                 <div id="card-text">
-                  <h6>Casual Boys' T-Shirt</h6>
+                  <h6>Casual Boys T-Shirt</h6>
                   <p>
                     Material: 100% Cotton <br />
                     Design: Graphic Print with Round Neck <br />
@@ -546,7 +546,7 @@ const Category = () => {
               </div>
               <div className="second-content">
                 <span className="second-content-text">
-                  This casual boys' t-shirt is made from 100% cotton, featuring
+                  This casual boys t-shirt is made from 100% cotton, featuring
                   a fun graphic print and a comfortable round neck, ideal for
                   everyday wear.
                 </span>
@@ -571,7 +571,7 @@ const Category = () => {
                   />
                 </div>
                 <div id="card-text">
-                  <h6>Cozy Kids' Hoodie</h6>
+                  <h6>Cozy Kids Hoodie</h6>
                   <p>
                     Material: Fleece Cotton Blend <br />
                     Design: Zip-Up with Kangaroo Pockets <br />
@@ -589,7 +589,7 @@ const Category = () => {
               </div>
               <div className="second-content">
                 <span className="second-content-text">
-                  This cozy kids' hoodie is made from a fleece cotton blend,
+                  This cozy kids hoodie is made from a fleece cotton blend,
                   featuring a zip-up design with kangaroo pockets, perfect for
                   warmth and style.
                 </span>
@@ -614,7 +614,7 @@ const Category = () => {
                   />
                 </div>
                 <div id="card-text">
-                  <h6>Trendy Kids' Sneakers</h6>
+                  <h6>Trendy Kids Sneakers</h6>
                   <p>
                     Material: Breathable Mesh with Rubber
                     <br />
@@ -633,7 +633,7 @@ const Category = () => {
               </div>
               <div className="second-content">
                 <span className="second-content-text">
-                  These trendy kids' sneakers feature breathable mesh material,
+                  These trendy kids sneakers feature breathable mesh material,
                   a comfortable rubber sole, and adjustable straps, perfect for
                   active kids.
                 </span>
@@ -1146,7 +1146,7 @@ const Category = () => {
               <div className="second-content">
                 <span className="second-content-text">
                   This rejuvenating night cream with retinol and collagen helps
-                  reduce wrinkles and restore skin's natural glow.
+                  reduce wrinkles and restore skins natural glow.
                 </span>
                 <button className="AddToCarts second-content-button">
                   Add to Cart
