@@ -10,22 +10,31 @@ export async function POST(req) {
       return NextResponse.json({ error: "Invalid userId" }, { status: 400 });
     }
 
-    // Get list of friend IDs for the user
-    const friendRelations = await prisma.friendList.findMany({
-      where: { userId: userIdInt },
-      select: { friendId: true },
+    // All relations where user is either userId or friendId
+    const allRelations = await prisma.friendList.findMany({
+      where: {
+        OR: [{ userId: userIdInt }, { friendId: userIdInt }],
+      },
+      select: {
+        userId: true,
+        friendId: true,
+      },
     });
 
-    const friendIds = friendRelations.map((relation) => relation.friendId);
+    // Collect all friend IDs
+    const friendIds = new Set();
+    allRelations.forEach((relation) => {
+      if (relation.userId !== userIdInt) friendIds.add(relation.userId);
+      if (relation.friendId !== userIdInt) friendIds.add(relation.friendId);
+    });
 
-    // Add current user's own ID to the exclusion list
-    const excludedIds = [...friendIds, userIdInt];
+    friendIds.add(userIdInt); // Exclude self too
 
-    // Find users who are not friends and not the current user
+    // Get users who are NOT friends + NOT self
     const nonFriends = await prisma.vibeUserTable.findMany({
       where: {
         id: {
-          notIn: excludedIds,
+          notIn: Array.from(friendIds),
         },
       },
     });

@@ -14,6 +14,79 @@ const InitialPage = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const [loggedUser, setLoggedUser] = useState(null); // 🧠 Store the user info here
+
+  const getBase64FromBuffer = (bufferData) => {
+    if (!bufferData) return null;
+
+    const byteArray = bufferData.data
+      ? new Uint8Array(bufferData.data)
+      : new Uint8Array(Object.values(bufferData));
+
+    let binary = "";
+    byteArray.forEach((b) => (binary += String.fromCharCode(b)));
+    return btoa(binary);
+  };
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userId = Cookies.get("vibeUser");
+      if (!userId) return;
+
+      try {
+        const res = await fetch("/api/registed/withid", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: parseInt(userId) }),
+        });
+
+        if (res.ok) {
+          const user = await res.json();
+          console.log(user);
+          const profileRecent = user?.userImage
+            ? `data:image/png;base64,${getBase64FromBuffer(user.userImage)}`
+            : "/Images/profile.svg";
+
+          setLoggedUser({
+            username: user.username || "User Name",
+            userImage: profileRecent,
+          });
+        } else {
+          const data = await res.json();
+          toast.error(data.error || "Login failed ❌");
+        }
+      } catch (error) {
+        toastBottomRight("Something went wrong 😵:", error);
+        toast.error("Server Error ❌");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  useEffect(() => {
+    const addButton = document.getElementById("user-0");
+    const form = document.querySelector(".LoginForm");
+    const cross = document.getElementById("cross");
+
+    if (!addButton || !form || !cross) return;
+
+    const showForm = () => (form.style.display = "block");
+    const hideForm = () => (form.style.display = "none");
+
+    addButton.addEventListener("click", showForm);
+    cross.addEventListener("click", hideForm);
+
+    return () => {
+      addButton.removeEventListener("click", showForm);
+      cross.removeEventListener("click", hideForm);
+    };
+  }, []);
+
   async function handleSubmit(e) {
     e.preventDefault();
     setLoading(true);
@@ -27,42 +100,25 @@ const InitialPage = () => {
         body: JSON.stringify({ username, password }),
       });
 
-      if (res.status === 200) {
+      if (res.ok) {
         const user = await res.json();
-        // localStorage.setItem("vibeUser", JSON.stringify(user));
         Cookies.set("vibeUser", user.id, {
           expires: 365 * 100,
           path: "/",
         });
         Cookies.set("isLoggedIn", "true", { expires: 1 / 24 });
-        // const userfromlocal = JSON.parse(localStorage.getItem("vibeUser"));
-        // console.log(userfromlocal?.username);
         router.push("/");
       } else {
         const data = await res.json();
-
         toast.error(data.error || "Login failed ❌");
       }
     } catch (error) {
       toastBottomRight("Something went wrong 😵:", error);
-
       toast.error("Server Error ❌");
     } finally {
       setLoading(false);
     }
   }
-
-  useEffect(() => {
-    const AddButton = document.getElementById("user-0");
-    const form = document.querySelector(".LoginForm");
-    const cross = document.getElementById("cross");
-    AddButton.addEventListener("click", () => {
-      form.style.display = "block";
-    });
-    cross.addEventListener("click", () => {
-      form.style.display = "none";
-    });
-  });
 
   return (
     <div id="main-container" style={{ height: "100vh" }}>
@@ -75,8 +131,19 @@ const InitialPage = () => {
 
         <section className="user-accounts">
           <section className="user-1">
-            <div className="userImage"></div>
-            <h3>User Name</h3>
+            <div
+              className="userImage"
+              style={{
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundImage: loggedUser
+                  ? `url(${loggedUser.userImage})`
+                  : "url(/Images/profile.svg)",
+              }}
+            ></div>
+            <h3 className="user-name">
+              {loggedUser ? loggedUser.username : "User Name"}
+            </h3>
           </section>
 
           <section id="user-0">
@@ -87,6 +154,7 @@ const InitialPage = () => {
               Add Account
             </h3>
           </section>
+
           <div id="right-section">
             <form
               onSubmit={handleSubmit}

@@ -228,7 +228,7 @@ export default function Home() {
           .querySelector(".contact-name")
           .addEventListener("click", () => {
             window.open(
-              `http://10.2.26.117:3000/message?roomId=${friend.friendListId}&currentUser=${userId}`,
+              `http://10.2.5.120:3000/message?roomId=${friend.friendListId}&currentUser=${userId}`,
               "_blank"
             );
           });
@@ -932,7 +932,7 @@ export default function Home() {
                   className="friend-template3 aic flex"
                   onClick={() => {
                     window.open(
-                      `http://10.2.26.117:3000/message?roomId=GroupChat&currentUser=${userId}`,
+                      `http://10.2.5.120:3000/message?roomId=GroupChat&currentUser=${userId}`,
                       "_blank"
                     );
                   }}

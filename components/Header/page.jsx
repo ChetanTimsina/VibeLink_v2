@@ -9,6 +9,25 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { toastBottomRight } from "@/app/lib/toastify";
 import { toast } from "react-hot-toast";
+import { deleteusertoast } from "@/app/lib/deleteusertoast";
+const deleteUser = async () => {
+  const userId = Cookies.get("vibeUser");
+
+  const res = await fetch("/api/deleteUser", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId }),
+  });
+
+  const data = await res.json();
+  if (data.success) {
+    toast.success("Deleted successfully 👻");
+    router.push("/InitialPage");
+    // maybe redirect or clear cookies
+  } else {
+    toast.error(data.error || "Something went wrong 💀");
+  }
+};
 const Header = () => {
   const [user, setUser] = useState(null);
 
@@ -294,7 +313,7 @@ const Header = () => {
                   className="friend-template3 aic flex"
                   onClick={() => {
                     window.open(
-                      `http://10.2.26.117:3000/message?roomId=GroupChat&currentUser=${userId}`,
+                      `http://10.2.5.120:3000/message?roomId=GroupChat&currentUser=${userId}`,
                       "_blank"
                     );
                   }}
@@ -429,7 +448,9 @@ const Header = () => {
                     id="icon-4"
                     className="icon-container adjustForImage"
                   ></section>
-                  <h6>Give Feedback</h6>
+                  <h6 onClick={() => deleteusertoast(deleteUser)}>
+                    Delete Account
+                  </h6>
                 </div>
                 <div>
                   <section
