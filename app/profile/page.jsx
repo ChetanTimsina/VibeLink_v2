@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, Suspense } from "react";
 import "./local.css";
 import Cookies from "js-cookie";
 import "../globals.css";
@@ -13,8 +13,9 @@ import { useRouter } from "next/navigation";
 // Add dynamic export to prevent prerendering
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
+export const runtime = "edge";
 
-const Page = () => {
+function ProfileComponent() {
   const [user, setUser] = useState(null);
   const [friends, setFriends] = useState([]);
   const [image, setImage] = useState(null);
@@ -22,6 +23,8 @@ const Page = () => {
   const [sImage, setSImage] = useState(null);
   const [sImagePreview, setSImagePreview] = useState(null);
   const [posts, setPosts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const postTemplateRef = useRef(null);
   const postContainerRef = useRef(null);
   const router = useRouter();
@@ -30,10 +33,45 @@ const Page = () => {
   const userId = searchParams.get("userId");
   const LoggedInId = Cookies.get("vibeUser");
 
+  // Initialize refs after component mount
   useEffect(() => {
-    postTemplateRef.current = document.querySelector(".post-container");
-    postContainerRef.current = document.querySelector("#post-container-area");
+    try {
+      postTemplateRef.current = document.querySelector(".post-container");
+      postContainerRef.current = document.querySelector("#post-container-area");
+      setIsLoading(false);
+    } catch (err) {
+      setError("Failed to initialize page elements: " + err.message);
+    }
   }, []);
+
+  // Fetch user data with error handling
+  useEffect(() => {
+    if (!userId) {
+      setError("No user ID provided");
+      return;
+    }
+
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const res = await fetch("/api/registed/withid", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: parseInt(userId) }),
+        });
+
+        if (!res.ok) throw new Error("Failed to fetch user data");
+        const data = await res.json();
+        setUser(data.user);
+      } catch (err) {
+        setError("Error loading user: " + err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [userId]);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -226,31 +264,6 @@ const Page = () => {
   const storyImageSrc = user?.userImage
     ? `data:image/png;base64,${getBase64FromBuffer(user.story)}`
     : "/Images/profile.svg";
-  // Fetch user data
-  if (!userId) return null;
-
-  const fetchUsername = async () => {
-    try {
-      const res = await fetch("/api/registed/withid", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ id: parseInt(userId) }),
-      });
-
-      if (!res.ok) throw new Error("Failed to fetch user");
-      const data = await res.json();
-      setUser(data.user);
-    } catch (error) {
-      toastBottomRight("Fetch error:", error);
-      setUser({ username: "Unknown" });
-    }
-  };
-
-  useEffect(() => {
-    fetchUsername();
-  }, []);
 
   // Fetch friends
   useEffect(() => {
@@ -382,6 +395,61 @@ const Page = () => {
       toastBottomRight("Error uploading post:", err);
     }
   };
+
+  if (error) {
+    return (
+      <div style={{ marginTop: "7vw", textAlign: "center", padding: "20px" }}>
+        <div className="top-main">
+          <div
+            style={{
+              padding: "20px",
+              background: "#fff5f5",
+              borderRadius: "8px",
+            }}
+          >
+            <h2 style={{ color: "#e53e3e" }}>Error</h2>
+            <p>{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              style={{
+                padding: "10px 20px",
+                marginTop: "20px",
+                backgroundColor: "#e53e3e",
+                color: "white",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
+              }}
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div style={{ marginTop: "7vw", textAlign: "center", padding: "20px" }}>
+        <div className="top-main">
+          <h2>Loading profile...</h2>
+          <p>Please wait</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!userId) {
+    return (
+      <div style={{ marginTop: "7vw", textAlign: "center", padding: "20px" }}>
+        <div className="top-main">
+          <h2>Invalid Profile</h2>
+          <p>No user ID provided</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ marginTop: "7vw" }}>
@@ -689,6 +757,12 @@ const Page = () => {
       </div>
     </div>
   );
-};
+}
 
-export default Page;
+export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ProfileComponent />
+    </Suspense>
+  );
+}
