@@ -4,6 +4,11 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { io } from "socket.io-client";
 import "./local.css";
+
+// Add dynamic export to prevent prerendering
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+
 let socket;
 
 export default function Home() {
