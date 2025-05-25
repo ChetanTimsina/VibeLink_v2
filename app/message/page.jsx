@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { io } from "socket.io-client";
 import "./local.css";
@@ -8,10 +8,11 @@ import "./local.css";
 // Add dynamic export to prevent prerendering
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
+export const runtime = "edge";
 
 let socket;
 
-export default function Home() {
+function ChatComponent() {
   const searchParams = useSearchParams();
   const roomId = searchParams.get("roomId");
   const userId = searchParams.get("currentUser");
@@ -19,6 +20,8 @@ export default function Home() {
   const [userCache, setUserCache] = useState({});
   const [chat, setChat] = useState([]);
   const [msg, setMsg] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const getBase64FromBuffer = (bufferData) => {
     if (!bufferData) return null;
@@ -30,10 +33,26 @@ export default function Home() {
     return btoa(binary);
   };
 
-  // Init socket once
+  // Init socket once with error handling
   useEffect(() => {
-    if (!socket) {
-      socket = io(undefined, { path: "/api/socketio" });
+    try {
+      if (!socket) {
+        socket = io(undefined, {
+          path: "/api/socketio",
+          reconnectionAttempts: 3,
+          timeout: 10000,
+        });
+
+        socket.on("connect_error", (err) => {
+          setError("Failed to connect to chat server: " + err.message);
+        });
+
+        socket.on("connect", () => {
+          setIsLoading(false);
+        });
+      }
+    } catch (err) {
+      setError("Failed to initialize chat: " + err.message);
     }
   }, []);
 
@@ -148,71 +167,125 @@ export default function Home() {
     ? `data:image/png;base64,${getBase64FromBuffer(user.userImage)}`
     : "/Images/profile.svg";
 
+  if (error) {
+    return (
+      <div
+        className="chat-wrapper"
+        style={{ textAlign: "center", padding: "20px" }}
+      >
+        <h2>Error</h2>
+        <p>{error}</p>
+        <button
+          onClick={() => window.location.reload()}
+          style={{
+            padding: "10px 20px",
+            marginTop: "20px",
+            backgroundColor: "#0070f3",
+            color: "white",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+          }}
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div
+        className="chat-wrapper"
+        style={{ textAlign: "center", padding: "20px" }}
+      >
+        <h2>Connecting to chat...</h2>
+        <p>Please wait while we establish connection</p>
+      </div>
+    );
+  }
+
+  if (!roomId) {
+    return (
+      <div
+        className="chat-wrapper"
+        style={{ textAlign: "center", padding: "20px" }}
+      >
+        <h2>Invalid Chat Room</h2>
+        <p>No room ID provided</p>
+      </div>
+    );
+  }
+
   return (
     <div className="chat-wrapper">
-      {roomId ? (
-        <div className="chat-box">
-          <div className="chat-header">
-            <h1>🌐 LAN Chat</h1>
-            <span>Room: {roomId}</span>
-          </div>
+      <div className="chat-box">
+        <div className="chat-header">
+          <h1>🌐 LAN Chat</h1>
+          <span>Room: {roomId}</span>
+        </div>
 
-          <div className="chat-window">
-            {chat.map((c, i) => {
-              if (c.type === "system") {
-                return (
-                  <div key={i} className="chat-system-message">
-                    <p>{c.text}</p>
-                  </div>
-                );
-              }
-
-              const isOwnMessage = c.senderId === parseInt(userId);
-
-              // Grab cached sender info or fallback
-              const senderInfo = userCache[c.senderId] || {
-                username: isOwnMessage ? user?.username || "You" : "Loading...",
-                image: isOwnMessage ? profileImageSrc : "/Images/profile.svg",
-              };
-
+        <div className="chat-window">
+          {chat.map((c, i) => {
+            if (c.type === "system") {
               return (
-                <div
-                  key={i}
-                  className={`chat-message ${isOwnMessage ? "own" : "other"}`}
-                >
-                  <img
-                    src={senderInfo.image}
-                    alt="profile"
-                    className="chat-avatar"
-                  />
-                  <div className="chat-bubble">
-                    <span className="chat-user">{senderInfo.username}</span>
-                    <p className="chat-text">{c.text}</p>
-                  </div>
+                <div key={i} className="chat-system-message">
+                  <p>{c.text}</p>
                 </div>
               );
-            })}
-          </div>
+            }
 
-          <div className="chat-input-area">
-            <input
-              type="text"
-              value={msg}
-              onChange={(e) => setMsg(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleSend();
-              }}
-              placeholder="Type your message..."
-              className="chat-input"
-            />
-            <button onClick={handleSend} className="send-button">
-              Send
-            </button>
-          </div>
+            const isOwnMessage = c.senderId === parseInt(userId);
+
+            // Grab cached sender info or fallback
+            const senderInfo = userCache[c.senderId] || {
+              username: isOwnMessage ? user?.username || "You" : "Loading...",
+              image: isOwnMessage ? profileImageSrc : "/Images/profile.svg",
+            };
+
+            return (
+              <div
+                key={i}
+                className={`chat-message ${isOwnMessage ? "own" : "other"}`}
+              >
+                <img
+                  src={senderInfo.image}
+                  alt="profile"
+                  className="chat-avatar"
+                />
+                <div className="chat-bubble">
+                  <span className="chat-user">{senderInfo.username}</span>
+                  <p className="chat-text">{c.text}</p>
+                </div>
+              </div>
+            );
+          })}
         </div>
-      ) : (
-        <p className="no-room">Invalid chat session or missing roomId</p>
-      )}
+
+        <div className="chat-input-area">
+          <input
+            type="text"
+            value={msg}
+            onChange={(e) => setMsg(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSend();
+            }}
+            placeholder="Type your message..."
+            className="chat-input"
+          />
+          <button onClick={handleSend} className="send-button">
+            Send
+          </button>
+        </div>
+      </div>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ChatComponent />
+    </Suspense>
   );
 }
