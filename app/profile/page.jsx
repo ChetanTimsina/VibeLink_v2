@@ -10,6 +10,10 @@ import { toastBottomRight } from "@/app/lib/toastify";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 
+// Add dynamic export to prevent prerendering
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+
 const Page = () => {
   const [user, setUser] = useState(null);
   const [friends, setFriends] = useState([]);
