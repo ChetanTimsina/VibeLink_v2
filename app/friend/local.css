@@ -76,7 +76,7 @@
   height: 60%;
   background-size: cover;
   border-radius: 50%;
-  border: 2.5vw solid white;
+  border: 2.5vw solid rgb(0, 0, 0);
   background-position: center;
   background-image: url("/Images/profile.svg");
   cursor: pointer;

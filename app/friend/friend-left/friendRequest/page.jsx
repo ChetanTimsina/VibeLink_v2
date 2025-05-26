@@ -5,7 +5,6 @@ import "@/app/globals.css";
 import "../../local.css";
 import Cookies from "js-cookie";
 import { toast } from "react-hot-toast";
-import { toastBottomRight } from "@/app/lib/toastify";
 
 // 🔁 Helper to convert buffer to base64
 const getBase64FromBuffer = (bufferData) => {
@@ -37,7 +36,7 @@ const FriendRequest = () => {
         const data = await response.json();
         setNonFriends(data);
       } catch (err) {
-        toastBottomRight(err);
+        console.log(err);
       }
     };
 
@@ -52,7 +51,7 @@ const FriendRequest = () => {
         const data = await response.json();
         setIncomingRequests(data.requests || []);
       } catch (err) {
-        toastBottomRight("Error fetching incoming requests:", err);
+        console.log("Error fetching incoming requests:", err);
       }
     };
 
@@ -157,7 +156,7 @@ const FriendRequest = () => {
                             prev.filter((req) => req.user.id !== friendId)
                           );
                         } catch (error) {
-                          toastBottomRight(
+                          console.log(
                             "Error accepting request: " + error.message
                           );
                         }
@@ -191,7 +190,7 @@ const FriendRequest = () => {
                             prev.filter((req) => req.user.id !== friendId)
                           );
                         } catch (error) {
-                          toastBottomRight(
+                          console.log(
                             "Error rejecting request: " + error.message
                           );
                         }

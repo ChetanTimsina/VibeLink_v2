@@ -2,7 +2,7 @@
 import Toastify from "toastify-js";
 import "toastify-js/src/toastify.css";
 
-export function toastBottomRight(message) {
+export function console.log(message) {
   Toastify({
     text: message,
     duration: 3000,

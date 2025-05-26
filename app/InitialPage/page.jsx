@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import "./local.css";
 import { toast } from "react-hot-toast";
-import { toastBottomRight } from "@/app/lib/toastify";
 
 const InitialPage = () => {
   const router = useRouter();
@@ -58,7 +57,7 @@ const InitialPage = () => {
           toast.error(data.error || "Login failed ❌");
         }
       } catch (error) {
-        toastBottomRight("Something went wrong 😵:", error);
+        console.log("Something went wrong 😵:", error);
         toast.error("Server Error ❌");
       } finally {
         setLoading(false);
@@ -113,7 +112,7 @@ const InitialPage = () => {
         toast.error(data.error || "Login failed ❌");
       }
     } catch (error) {
-      toastBottomRight("Something went wrong 😵:", error);
+      console.log("Something went wrong 😵:", error);
       toast.error("Server Error ❌");
     } finally {
       setLoading(false);

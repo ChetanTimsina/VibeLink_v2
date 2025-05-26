@@ -6,7 +6,7 @@ import "../globals.css";
 import "../localsecond.css";
 import "../local.css";
 import { toast } from "react-hot-toast";
-import { toastBottomRight } from "@/app/lib/toastify";
+
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 
@@ -150,7 +150,7 @@ function ProfileComponent() {
               console.warn("😵 Server rejected like:", data.error);
             }
           } catch (err) {
-            toastBottomRight("💀 Error hitting like API:", err);
+            console.log("💀 Error hitting like API:", err);
           }
         });
       });
@@ -198,7 +198,7 @@ function ProfileComponent() {
           const data = await res.json();
           return data.username || "Unknown Author";
         } catch (err) {
-          toastBottomRight(err);
+          console.log(err);
           return "Unknown Author";
         }
       }
@@ -269,7 +269,7 @@ function ProfileComponent() {
   useEffect(() => {
     const fetchFriends = async () => {
       if (!userId) {
-        toastBottomRight("No user found in cookies");
+        console.log("No user found in cookies");
         return;
       }
 
@@ -286,7 +286,7 @@ function ProfileComponent() {
         const data = await res.json();
         setFriends(data);
       } catch (err) {
-        toastBottomRight("Error fetching friends:", err);
+        console.log("Error fetching friends:", err);
       }
     };
 
@@ -340,7 +340,7 @@ function ProfileComponent() {
         toast.error("Profile Change error");
       }
     } catch (err) {
-      toastBottomRight("Error uploading post:", err);
+      console.log("Error uploading post:", err);
     }
   };
 
@@ -392,7 +392,7 @@ function ProfileComponent() {
         toast.error("Story Change error");
       }
     } catch (err) {
-      toastBottomRight("Error uploading post:", err);
+      console.log("Error uploading post:", err);
     }
   };
 

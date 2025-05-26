@@ -7,7 +7,6 @@ import Cookies from "js-cookie";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
-import { toastBottomRight } from "@/app/lib/toastify";
 
 const userId = Cookies.get("vibeUser");
 
@@ -53,7 +52,7 @@ export default function Home() {
         const data = await res.json();
         setUser(data.user);
       } catch (error) {
-        toastBottomRight("Fetch error:", error);
+        console.log("Fetch error:", error);
         setUser({ username: "Unknown" });
       }
     };
@@ -115,7 +114,7 @@ export default function Home() {
         toast.error("🚨Post uploaded error");
       }
     } catch (err) {
-      toastBottomRight("Error uploading post:", err);
+      console.log("Error uploading post:", err);
     }
   };
 
@@ -138,7 +137,7 @@ export default function Home() {
       const user = Cookies.get("vibeUser"); // Get userId from cookie
 
       if (!user) {
-        toastBottomRight("No user found in cookies");
+        console.log("No user found in cookies");
         return;
       }
 
@@ -156,7 +155,7 @@ export default function Home() {
         const data = await res.json();
         setFriends(data);
       } catch (err) {
-        toastBottomRight("Error fetching friends:", err);
+        console.log("Error fetching friends:", err);
       }
     };
 
@@ -285,7 +284,7 @@ export default function Home() {
         // Add fetched posts to accumulator
         allPosts.push(...data);
       } catch (err) {
-        toastBottomRight("Image fetch error 💥:", err);
+        console.log("Image fetch error 💥:", err);
       }
     }
 
@@ -343,7 +342,7 @@ export default function Home() {
               console.warn("😵 Server rejected like:", data.error);
             }
           } catch (err) {
-            toastBottomRight("💀 Error hitting like API:", err);
+            console.log("💀 Error hitting like API:", err);
           }
         });
       });
@@ -395,7 +394,7 @@ export default function Home() {
           const data = await res.json();
           return data.username || "Unknown Author";
         } catch (err) {
-          toastBottomRight(err);
+          console.log(err);
           return "Unknown Author";
         }
       }
@@ -908,7 +907,7 @@ export default function Home() {
                       alt="Post"
                       style={{ width: "300px", height: "auto" }}
                       onError={(e) => {
-                        toastBottomRight("🧨 Image load failed", e);
+                        console.log("🧨 Image load failed", e);
                       }}
                     />
                   ) : (

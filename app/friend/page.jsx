@@ -5,7 +5,7 @@ import "@/app/globals.css";
 import "./local.css";
 import Cookies from "js-cookie";
 import { toast } from "react-hot-toast";
-import { toastBottomRight } from "@/app/lib/toastify";
+
 import { useRouter } from "next/navigation";
 
 const getBase64FromBuffer = (bufferData) => {
@@ -41,7 +41,7 @@ const Friend = () => {
         const data = await response.json();
         setNonFriends(data);
       } catch (err) {
-        toastBottomRight(err);
+        console.log(err);
       }
     };
 
@@ -58,7 +58,7 @@ const Friend = () => {
 
         setIncomingRequests(data.requests || []);
       } catch (err) {
-        toastBottomRight("Error fetching incoming requests:", err);
+        console.log("Error fetching incoming requests:", err);
       }
     };
 
@@ -236,7 +236,7 @@ const Friend = () => {
                             prev.filter((req) => req.user.id !== friendId)
                           );
                         } catch (error) {
-                          toastBottomRight(
+                          console.log(
                             "✨Error accepting friend request: " + error.message
                           );
                         }
@@ -269,7 +269,7 @@ const Friend = () => {
                             prev.filter((req) => req.user.id !== friendId)
                           );
                         } catch (error) {
-                          toastBottomRight(
+                          console.log(
                             "Error rejecting friend request: " + error.message
                           );
                         }

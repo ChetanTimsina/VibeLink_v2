@@ -5,7 +5,6 @@ import "../../local.css";
 import Cookies from "js-cookie";
 import Link from "next/link";
 import { toast } from "react-hot-toast";
-import { toastBottomRight } from "@/app/lib/toastify";
 
 // Convert binary buffer to base64 for image
 const getBase64FromBuffer = (bufferData) => {
@@ -41,10 +40,10 @@ const FriendSuggestion = () => {
         if (response.ok) {
           setNonFriends(data);
         } else {
-          toastBottomRight("Failed to fetch suggestions");
+          console.log("Failed to fetch suggestions");
         }
       } catch (err) {
-        toastBottomRight("Error fetching non-friends:", err);
+        console.log("Error fetching non-friends:", err);
       }
     };
 

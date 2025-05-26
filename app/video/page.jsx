@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import "./local.css";
 import "@/app/globals.css";
 import "@/app/local.css";
-import { toastBottomRight } from "@/app/lib/toastify";
 
 const Video = () => {
   const [movies, setMovies] = useState([]);
@@ -36,7 +35,7 @@ const Video = () => {
         setMovies(combinedResults);
       } catch (err) {
         setError("TMDB said nah 💔");
-        toastBottomRight("💀 Error fetching movies:", err);
+        console.log("💀 Error fetching movies:", err);
       }
     };
 

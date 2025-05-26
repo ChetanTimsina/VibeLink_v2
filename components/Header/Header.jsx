@@ -7,7 +7,7 @@ import "@/app/globals.css";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
-import { toastBottomRight } from "@/app/lib/toastify";
+
 import { toast } from "react-hot-toast";
 import { deleteusertoast } from "@/app/lib/deleteusertoast";
 const deleteUser = async () => {
@@ -52,7 +52,7 @@ const Header = () => {
 
         setIncomingRequests(data.requests || []);
       } catch (err) {
-        toastBottomRight("Error fetching incoming requests:", err);
+        console.log("Error fetching incoming requests:", err);
       }
     };
 
@@ -99,7 +99,7 @@ const Header = () => {
                   prev.filter((req) => req.user.id !== friendId)
                 );
               } catch (error) {
-                toastBottomRight(
+                console.log(
                   "✨Error accepting friend request: " + error.message
                 );
               }
@@ -124,9 +124,7 @@ const Header = () => {
                   );
                 }
               } catch (error) {
-                toastBottomRight(
-                  "Error rejecting friend request: " + error.message
-                );
+                console.log("Error rejecting friend request: " + error.message);
               }
             });
           All_container.append(not);
@@ -173,7 +171,7 @@ const Header = () => {
         const data = await res.json();
         setUser(data.user);
       } catch (error) {
-        toastBottomRight("Fetch error:", error);
+        console.log("Fetch error:", error);
         setUser({ username: "Unknown" });
       }
     };

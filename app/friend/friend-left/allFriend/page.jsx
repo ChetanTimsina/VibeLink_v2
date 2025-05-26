@@ -4,7 +4,7 @@ import "@/app/globals.css";
 import "../../local.css";
 import { useEffect } from "react";
 import Cookies from "js-cookie";
-import { toastBottomRight } from "@/app/lib/toastify";
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -27,7 +27,7 @@ const AllFriend = () => {
       const user = Cookies.get("vibeUser"); // Get userId from cookie
 
       if (!user) {
-        toastBottomRight("No user found in cookies");
+        console.log("No user found in cookies");
         return;
       }
 
@@ -45,7 +45,7 @@ const AllFriend = () => {
         const data = await res.json();
         setFriends(data);
       } catch (err) {
-        toastBottomRight("Error fetching friends:", err);
+        console.log("Error fetching friends:", err);
       }
     };
 
