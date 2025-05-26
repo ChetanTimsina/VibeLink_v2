@@ -308,7 +308,7 @@ const Header = () => {
                   className="friend-template3 aic flex"
                   onClick={() => {
                     window.open(
-                      `http://10.2.26.226:3000/message?roomId=GroupChat&currentUser=${userId}`,
+                      `http://10.2.32.164:3000/message?roomId=GroupChat&currentUser=${userId}`,
                       "_blank"
                     );
                   }}
